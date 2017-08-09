@@ -550,6 +550,23 @@ router.get('/restapi/getRestimeCount', function(req, res, next) {
   });
 });
 
+router.get('/restapi/getAppmapdata', function(req, res, next) {
+  console.log('dashboard/restapi/getAppmapdata');    
+  var in_data = {
+    index : 'applicationmapdata-2017-08',
+    //gte : req.query.gte,
+    //lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectAppmapdata", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    console.log(out_data)  ;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
 
 // ###########################################################
 

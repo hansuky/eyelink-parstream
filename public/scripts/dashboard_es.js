@@ -1,7 +1,62 @@
 
 $(function(){ // on dom ready  
   getDash(new Date);
-  var elesJson = {
+   $.ajax({
+    url: "/dashboard/restapi/getAppmapdata" ,
+    dataType: "json",
+    type: "get",
+    data: {},
+    success: function(result) {      
+      if (result.rtnCode.code == "0000") {        
+        makeElesJson(result.rtnData);             
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}); // on dom ready
+
+function makeElesJson(data){  
+  console.log(data);
+  var nodes = [], edges = [], nodekey = [], edgekey = [];
+  data.forEach(function(d){    
+    if(nodekey[d._source.application_id]!=null) {       
+      if(parseInt(d._source.state) >=400 ) {
+        nodekey[d._source.application_id]++;
+      }
+    } else { 
+      nodekey[d._source.application_id] = 0;                  
+      var img = d._source.application_name.split(' ');
+      nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
+      if(parseInt(d._source.state) >= 400 ) {
+        nodekey[d._source.application_id]++;
+      }
+    }
+    if(edgekey[d._source.application_id+'-'+d._source.to_application_id] != null) {
+      edgekey[d._source.application_id+'-'+d._source.to_application_id]++
+    } else {
+      edgekey[d._source.application_id+'-'+d._source.to_application_id] = 1;
+    }
+  });
+  for(key in nodekey) {
+    if(nodekey[key] != 0){
+      nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
+    }
+  }
+  for(key in edgekey) {
+    var id = key.split('-');    
+    edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
+  }
+  var elesJson = { nodes : nodes, edges : edges };
+  console.log(elesJson);
+  getServerMap(elesJson);
+}
+function getServerMap(elesJson) {  
+  /*var elesJson = {
     nodes: [
       { data: { id: 'p1', name : 4, img: '../assets/sample/back.png' } },
       { data: { id: 'p2', name : 12, img: '../assets/sample/back.png' } },
@@ -30,7 +85,7 @@ $(function(){ // on dom ready
        { data: { count : 2285, source: 'n4', target: 'n10' } },
        { data: { count : 2280, source: 'n4', target: 'n11' } },     
     ]  
-  };  
+  };  */
   var cy = cytoscape({
     container: document.getElementById('cy'),
 
@@ -126,15 +181,9 @@ $(function(){ // on dom ready
         .css({
           'text-wrap' : 'wrap'
         }),
-        
-
+      
     elements: elesJson,
-    
-/*  layout: {
-    name: 'preset',
-    padding: 5
-  },
-*/
+
     layout: {
       name: 'dagre',
       rankDir: 'LR',
@@ -148,62 +197,10 @@ $(function(){ // on dom ready
     }
   }); 
   console.log(elesJson);
-
-
-   cy.$('#n1').qtip({
- content: {
-    prerender:true,
-    text : '3'
-  },
-  show: {
-            when: false, // Don't specify a show event
-            ready: true, // Show the tooltip when ready            
-        },
-  hide: {
-    event : false, // Don't specify a hide event
-  },
-  position: {
-    my: 'bottom left',
-    at: 'top center'
-  },
-  style: {
-    classes: 'my-qtip',
-    tip: {
-      width: 8,
-      height: 4    
-    }
-  }
-});
-    cy.$('#n2').qtip({
- content: {
-    prerender:true,
-    text : '2'
-  },
-  show: {
-            when: false, // Don't specify a show event
-            ready: true, // Show the tooltip when ready            
-        },
-  hide: {
-    event : false, // Don't specify a hide event
-  },
-  position: {
-    my: 'bottom left',
-    at: 'top center'
-  },
-  style: {
-    classes: 'my-qtip',
-    tip: {
-      width: 8,
-      height: 4    
-    }
-  }
-});
-
-}); // on dom ready
+};
 
 function getDash(day) {  
-   var indexs = $('#indexs').val();
-   console.log(indexs);
+  var indexs = $('#indexs').val();
   var d = day.toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
@@ -239,7 +236,6 @@ function getDash(day) {
               });
             }
         });  
-        console.log(new Date(start), new Date(end))     ;
         drawDash(data, start, end);
       } else {
         //- $("#errormsg").html(result.message);
@@ -259,7 +255,6 @@ function drawDash(data, start, end) {
     doBigScatterChart(start, end);
   }
   var oScatterChart;
-  console.log(oScatterChart);
   function doBigScatterChart(start, end){
     oScatterChart = new BigScatterChart({
       sContainerId : 'chart1',
@@ -286,12 +281,8 @@ function drawDash(data, start, end) {
       sXLabel : '',
       nPaddingRight : 5,
       fOnSelect : function(htPosition, htXY){
-        console.log('fOnSelect', htPosition, htXY);
-        console.time('fOnSelect');
         console.log(new Date(start), new Date(end));
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        console.log(new Date(htXY.nXTo), new Date(htXY.nXFrom));
-        console.log(htXY.nXTo, htXY.nXFrom);
         var link = '/dashboard/selected_detail?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
@@ -354,9 +345,6 @@ function drawDash(data, start, end) {
       oScatterChart.addBubbleAndDraw(data);         
   }   
    if(cnt++ == 0) {
-    console.log(new Date(start));
-    console.log(new Date(end)); 
-
     summary(data, start, end);
    }  
 };  
