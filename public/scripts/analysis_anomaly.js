@@ -1,4 +1,256 @@
-function getData(){
+function getOldData() {
+  var now = new Date();
+  console.log('now : '+now);
+  var min = Math.floor(now.getMinutes()/10)*10;  
+  var point = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), min, 0);
+  console.log('point : '+point);
+  var start = new Date(point.getTime()-110*60*1000);  
+  console.log('start : '+start);
+  var end = new Date(point.getTime()+10*60*1000);
+  console.log('end : '+end);
+  var raw = [], match = {};
+  var iso = d3.time.format.utc("%Y-%m-%dT%H:%M:%S.%LZ");
+  var sDate = iso(new Date(start.getTime()+9*60*60*1000)).split('.');
+  var nDate = iso(new Date(now.getTime()+9*60*60*1000)).split('.');
+  console.log(sDate, nDate);
+  $.ajax({
+    url: "/analysis/restapi/getClusterNodePower" ,
+    dataType: "json",
+    type: "get",
+    data: { nodeId : "0002.00000039", startDate : sDate[0] , endDate : nDate[0] },
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {        
+        raw = result.rtnData;        
+        getPatternData(raw, start.getTime(), end.getTime(), now.getTime(), point);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });  
+}
+function getPatternData(raw, start, end, now, point){
+  $.ajax({
+    url: "/analysis/restapi/getAnomalyPattern/2017-02-01T11:00:00",
+    dataType: "json",
+    type: "get",
+    data: {},
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {                        
+        match = ({ampere : result.clust.ampere[result.pattern.ampere], voltage : result.clust.voltage[result.pattern.voltage], power_factor : result.clust.power_factor[result.pattern.power_factor], active_power : result.clust.active_power[result.pattern.active_power] })
+        console.log(match);
+        drawVoltage(raw, match['voltage'], start, end, now, point);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+  
+}
+
+function drawVoltage(raw, compare, start, end, now, point) {
+  console.log(raw);
+  console.log(compare);
+  console.log(start);
+  console.log(end);
+  console.log(now);
+  console.log(point);  
+  console.log(raw.length);
+  var limit = 60 * 1,    duration = 1000;   
+ var margin = {top: 10, right: 50, bottom: 30, left: 50},
+  width = window.innerWidth*0.88 - margin.left - margin.right,
+  height = 400 - margin.top - margin.bottom;  
+  var value = raw[raw.length-1].voltage;
+    var groups = {
+      output: {
+        value: value,
+        color: 'red',
+        data: d3.range(0).map(function() {
+          return 0
+        })
+      }
+    }
+
+    var x = d3.time.scale()
+     .domain([start, end])
+    .range([0, width]);
+
+    var y = d3.scale.linear()
+    .domain([0, 300])
+    .range([height, 3]);
+
+    var line = d3.svg.line()
+    .interpolate('basis')
+    .x(function(d, i) {       
+     return x(now - (limit - 1 - i) * duration)  })
+    .y(function(d) {      return y(d)   })
+
+ var valueline = d3.svg.line()
+  .x(function(d) { return x(new Date(d.event_time)); })
+  .y(function(d) { return y(d.voltage); });
+  
+   var compareline = d3.svg.line()
+    .interpolate("cardinal")
+    .x(function(d, i) { return x(start+((i+1)*60*1000));})
+    .y(function(d) {console.log(d); return y(d);});
+
+    var svg = d3.select('#voltage')
+    .append('svg')    
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+var xaxis = svg.append('g')
+.attr('class', 'x axis')
+.attr('transform', 'translate(0,' + height + ')')
+.call(x.axis = d3.svg.axis().scale(x).orient('bottom'))
+
+var yaxis = svg.append('g')
+ .attr('class', 'y axis')   
+    .call(y.axis = d3.svg.axis().scale(y).orient('left'))
+
+  svg.append("path")   
+  .attr("class", "compareline")
+   .attr('stroke', 'skyblue')
+//   .attr('opacity', 0.5)
+  .attr("d", compareline(compare));
+
+  svg.append("path")   
+  .attr("class", "valueline")
+   .attr('stroke', 'gray')
+  .attr("d", valueline(raw));
+
+var formatTime = d3.time.format("%I:%M:%S");
+// Define the div for the tooltip
+var div = d3.select("body").append("div") 
+    .attr("class", "tooltip")       
+    .style("opacity", 0);
+
+    // Add the scatterplot
+    svg.selectAll("dot1")  
+        .data(raw)     
+        .enter().append("circle")               
+        .attr("r", 5)   
+        .attr('opacity', 0)
+        .attr("cx", function(d) { return x(new Date(d.event_time)); })     
+        .attr("cy", function(d) { return y(d.voltage); })   
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)    
+                .style("opacity", 1);    
+            div .html(formatTime(new Date(d.event_time)) + "<br/>"  + d.voltage)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
+        // Add the scatterplot
+    svg.selectAll("dot2")  
+        .data(compare)     
+        .enter().append("circle")               
+        .attr("r", 5)   
+        .attr('opacity', 0)
+        .attr("cx", function(d, i) { return x(start+((i+1)*60*1000)); })     
+        .attr("cy", function(d) { return y(d); })   
+        .on("mouseover", function(d, i) {    
+            div.transition()    
+                .duration(200)    
+                .style("opacity", 1);    
+ //           div .html(formatTime(new Date(start+((i+1)*60*1000))) + "<br/>"  + d)  
+            div .html(d.toFixed(3))  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
+
+        var ddata = [];
+      var circle =svg.selectAll("dot3")
+        .data(ddata)
+        .enter().append('circle')
+        .attr("r", 5)   
+        .attr('opacity', 0.5)
+        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cy", function(d) { return y(d.value); })   
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)    
+                .style("opacity", 1);    
+            div .html(formatTime(new Date(d.date)) + "<br/>"  + d.value)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
+
+    var paths = svg.append('g');
+
+    for (var name in groups) {
+      var group = groups[name]     
+      group.path = paths.append('path')
+      //group.circle = paths.append('circle')
+      .data([group.data])
+      .attr('class', name + ' group')
+      .style('stroke', group.color);
+   }
+
+    var cnt = 1, index = 49;
+  function tick() {     
+    /*if(cnt++%60 == 0){
+      value = clust[index++];
+    }    */
+    var nnow = new Date().getTime() - duration;
+
+    for (var name in groups) {
+      var group = groups[name]
+        //group.data.push(group.value) // Real values arrive at irregular intervals
+        group.value = value
+        group.data.push(value)
+        group.path.attr('d', line)        
+      }      
+      ddata.push({ date:nnow, value:value});      
+
+    x.domain([nnow-(now-start), nnow+(end-now)]);
+    // Slide paths left
+      paths.attr('transform', null)
+      .transition()
+      .duration(duration*2)
+      .ease('linear')
+   //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')   
+      .each('end', tick)
+      if(end<=now){
+        console.log('reload');
+        window.location.reload(true);
+      }
+    }
+  tick();
+
+}
+
+
+
+
+function getData(){  
   d3.csv("../assets/demo1.csv", function(error, getData) {
       var day = new Date().getTime();     
       var clust = [], vdata = [];     
@@ -15,25 +267,7 @@ function getData(){
         }
        date += 60*1000;
       });             
-  $.ajax({
-    url: "/analysis/restapi/getAnomaly/20170803" ,
-    dataType: "json",
-    type: "get",
-    data: {},
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {        
-        var clust = result.rtnData.pattern_data.v_pattern.cluster_0;
-        drawClust(vdata, clust, day);     
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
+  
       drawLiveChart(vdata, clust, day);     
       drawChart(vdata, clust, day);
       drawLive(vdata);
@@ -136,8 +370,7 @@ var div = d3.select("body").append("div")
 
     var paths = svg.append('g');
 
-    var bisectDate = d3.bisector(function(d) { 
-      console.log(d);
+    var bisectDate = d3.bisector(function(d) {       
       return d.date; }).left;    
 
     function mouseover() {
@@ -421,17 +654,17 @@ function drawChart(data, clust, now){
   .attr("class", "line")
    .attr('stroke', 'black')
   .attr("d", valueline(data));
-   svg.append("path")
+ svg.append("path")
   .attr("class", "line")
   .attr('stroke', 'blue')
   .attr("d", line(clust));
   // Add the X Axis
-  svg.append("g")
+svg.append("g")
   .attr("class", "x axis")
   .attr("transform", "translate(0," + height + ")")
   .call(xAxis);
   // Add the Y Axis
-  svg.append("g")
+svg.append("g")
   .attr("class", "y axis")
   .call(yAxis);
 

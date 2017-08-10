@@ -108,7 +108,8 @@ function getServerMap(elesJson) {
           'shape': 'circle',   
           'text-valign': 'bottom', 
           'text-wrap' : 'wrap' ,          
-          'background-image': 'data(img)'
+          'background-image': 'data(img)',
+          'background-color': 'white',
           })
       .selector(':parent')
         .css({
@@ -124,7 +125,7 @@ function getServerMap(elesJson) {
           'text-halign': 'right',
           'text-outline-width': 10,
           'text-outline-color': 'red',
-          'background-color': 'red',
+          'background-color': 'white',
           "color" : "white",
           "font-size" : '20px'
         })
@@ -132,8 +133,8 @@ function getServerMap(elesJson) {
         .css({
           'curve-style': 'bezier',
           'width': 3,
-          'line-color': '#B1C1F2',
-          'target-arrow-color': '#B1C1F2',
+          'line-color': '#ddd ',
+          'target-arrow-color': '#ddd ',
           'target-arrow-shape': 'triangle',
           'text-outline-width': 5,
           'text-outline-color': 'white',
@@ -156,12 +157,12 @@ function getServerMap(elesJson) {
         })      
       .selector(':selected')
         .css({
-          'background-color': 'black',
-          'line-color': 'blue',
+          'background-color': 'white',
+          'line-color': '#1593ff',
            'border-width': 3,
-          'border-color': 'blue',
-          'target-arrow-color': 'blue',
-          'source-arrow-color': 'black',
+          'border-color': '#1593ff',
+          'target-arrow-color': '#1593ff',
+          'source-arrow-color': 'white',
           'opacity': 1
         })
         .selector('#a1')
@@ -425,12 +426,12 @@ chart
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
-    .round(d3.time.hour.round)
-    .xUnits(function(){return 20;})
+//    .round(d3.time.hour.round)
+    .xUnits(function(){return 10;})
     .elasticY(true)
     .centerBar(true)
  //   .gap(gap)
-    .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
+     .colors(d3.scale.ordinal().range(["#57a115", "#0ecdb0", "#0e99cd", "#de9400", "#de3636"]));
     load.legend(dc.legend());
     dc.override(load, 'legendables', function() {
       var items = load._legendables();

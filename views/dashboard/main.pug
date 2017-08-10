@@ -105,24 +105,21 @@ block content
               .caption.font-dark
                 span.caption-subject.bold.uppercase One Week Event Count
                 span.caption-helper  by success / error
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
             .portlet-body
               .chart(style='height:80px')
                 #volumn-chart.chart_custom
       .row
-        .col-md-6(style="height:820px")    
-          .portlet.light(style="height:820px")
+        .col-md-6(style="height:815px")    
+          .portlet.light(style="height:815px")
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-blue-sharp Server Map
-                span.caption-helper  Server Map
+                span.caption-subject.bold.uppercase Server Map                
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -152,8 +149,7 @@ block content
           .portlet.light.bordered   
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Summary Chart
-                span.caption-helper  Response Time
+                span.caption-subject.bold.uppercase Count by All
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -168,16 +164,13 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase.font-green-haze Summary Chart                
-                span.caption-helper  Load
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+                span.caption-subject.bold.uppercase Count by Hour
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
             .portlet-body
               .row
                 .col-md-12(style="height:300px")                  

@@ -96,7 +96,7 @@
   position: absolute;
 }
 .page-header .navbar .topbar-actions .btn{
-  margin:0 5px; 
+  margin:0 5px;
   background: transparent;
 }
 .page-header .navbar .topbar-actions .btn i{
@@ -748,8 +748,8 @@ Quick Sidebar Layout
   right: 0;
 }
 
-/*** 
-Quick Sidebar Toggler 
+/***
+Quick Sidebar Toggler
 ***/
 .page-quick-sidebar-toggler {
   overflow: hidden;
@@ -1080,8 +1080,8 @@ Quick Sidebar Layout
   background: #21282e;
 }
 
-/*** 
-Quick Sidebar Toggler 
+/***
+Quick Sidebar Toggler
 ***/
 .page-quick-sidebar-toggler {
   background: #36424c;

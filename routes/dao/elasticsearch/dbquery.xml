@@ -234,13 +234,13 @@
                       { "range" : 
                         { "responsetime" : 
                           { "gte" : #MIN#,
-                            "lt" : #MAX#  } 
+                            "lte" : #MAX#  } 
                         }
                       },
                       { "range" : 
                         { "timestamp" :
                           { "gte" : #START#,
-                            "lt" : #END# }
+                            "lte" : #END# }
                         }
                       }
                     ]
@@ -875,13 +875,13 @@
                       { "range" : 
                         { "responsetime" : 
                           { "gte" : #MIN#,
-                            "lt" : #MAX#  } 
+                            "lte" : #MAX#  } 
                         }
                       },
                       { "range" : 
                         { "timestamp" :
                           { "gte" : #START#,
-                            "lt" : #END# }
+                            "lte" : #END# }
                         }
                       }
                     ]
@@ -946,7 +946,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 100000,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -955,7 +955,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 100000,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -966,7 +966,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 100000,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>     
@@ -975,7 +975,7 @@
         "index" : "corecode-*",
         "type" : "corecode",
         "body" : {       
-          "size" : 100000, 
+          "size" : 10000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
           "query" : { 
@@ -986,7 +986,7 @@
                 { "terms" : { "node_id": [##NODE##] } },             
                 {"range" : { "event_time" :
                   { "gte" : #START_TIMESTAMP#,
-                      "lt" : #END_TIMESTAMP# }
+                      "lte" : #END_TIMESTAMP# }
                     }
                   } 
                 ]
@@ -994,38 +994,14 @@
             }
           }
         } 
-     ]]></query>
-   <query id='selectClusterNodePowerTest'><![CDATA[
-     {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",              
-        "body" : {       
-          "size" : 100000, 
-          "sort" : { "event_time" : { "order" : "asc" }},
-          "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
-          "query" : { 
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-               "filter" : [
-                { "term" : { "event_type": "1" } },
-                {"range" : { "event_time" :
-                  { "gte" : "2016-12-29T16:15:41.000Z",
-                      "lt" : "2016-12-30T16:15:41.000Z" }
-                    }
-                  } 
-                ]
-              }
-            }
-          }
-        } 
-     ]]></query>
+     ]]></query>   
 <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
     <query id='selectClusterRawData'><![CDATA[
      {
         "index" : "corecode-2017-05",
         "type" : "corecode",
         "body" : {       
-          "size" : 100000, 
+          "size" : 10000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "event_type", "active_power", "ampere", "amount_active_power", "als_level", "dimming_level", "noise_decibel", "noise_frequency", "vibration_x", "vibration_y", "vibration_z"],
           "query" : { 
@@ -1035,31 +1011,13 @@
                   { "terms" : { "node_id": [##NODE##] }  },
                   { "range" : { "event_time" :
                       { "gte" : #START_TIMESTAMP#,
-                         "lt" : #END_TIMESTAMP# } }
+                         "lte" : #END_TIMESTAMP# } }
                    }   
                 ]
               }
             }
           }
         } 
-    ]]></query>
-    <query id= 'insertClusteringDetail'><![CDATA[
-      {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
-        "body" : {       
-          "size"   : 100000,           
-          "query" : { "match_all" : { }    }
-        } 
-      ]]></query>
-    <query id= 'insertClusteringMaster'><![CDATA[
-     {
-        "index" : "corecode-2017-05",
-        "type" : "corecode", 
-        "body" : { 
-          "size"   : 100000, 
-          "query" : { "match_all" : { }    }
-        } 
-      ]]></query>  
+    ]]></query>    
 </analysis>
 </queryList>
