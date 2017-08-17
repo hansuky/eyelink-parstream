@@ -1,8 +1,31 @@
 $(function(){
-  
-      /*  d3.json("/assets/sample/data/test.json", function(error, json) {          */
-     d3.json("/sample/restapi/selectJiraAccJson", function(error, data) {                 
-      var colors = data.color;
+  var indexs = $('#indexs').val();       
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var day = new Date().toString().split(' ');    
+  var index = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+  console.log(index);
+ $.ajax({
+    url: "/sample/restapi/selectJiraAccJson" ,
+    dataType: "json",
+    type: "get",
+    data: { index : index },
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {        
+        drawChart(result);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });     
+});
+
+function drawChart(data) {
+   var colors = data.color;
       console.log(color);
       console.log(data.rtnData);
 
@@ -35,5 +58,5 @@ $(function(){
             return null;
           }
         }
-      });
-    });
+ 
+}

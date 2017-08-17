@@ -12,8 +12,17 @@ block style
     .line {
       fill: none;      
     }
+
+    .area {
+        stroke-width: 1;
+      }
     text {
       font-size: 0.5rem;
+    }
+   .legend text {   
+        fill: black;
+        font-weight: bold;
+        font-size: 1rem;
     }
     .axis path,
     .axis line {
@@ -22,6 +31,11 @@ block style
         stroke-width: 1;
         shape-rendering: crispEdges;
     } 
+    .legend .legend-bg {
+        fill: rgba(0, 0, 0, 0.5);
+        stroke: rgba(0, 0, 0, 0.5);
+        opacity: 0.1;
+      }
     div.tooltip { 
       position: absolute;     
       text-align: center;     
@@ -34,6 +48,29 @@ block style
       border-radius: 8px;     
       pointer-events: none;     
     }
+    .area.inner,
+    .legend .inner {
+        fill: rgba(230, 230, 255, 0.8);
+        stroke: rgba(216, 216, 255, 0.8);
+     }
+     .compareline,
+      .legend .compareline {
+        fill: none;
+        stroke: skyblue;
+        stroke-width: 3;
+      }
+      .valueline,
+      .legend .valueline {
+        fill: none;
+        stroke: gray;
+        stroke-width: 3;
+      }
+      .live-line,
+      .legend .live-line {
+        fill: none;
+        stroke: red;
+        stroke-width: 3;
+      }
 block script
   script(type='text/javascript', src='/assets/leaflet/d3.js')
   script(src='/assets/annie/js/vue.min.js')
@@ -42,8 +79,7 @@ block script
   script(src='/scripts/analysis_anomaly.js')  
   script.
     $(document).ready(function(e) {      
-      getData();      
-      getOldData();      
+      getData();            
     });
 block content
   .container-fluid
@@ -72,10 +108,10 @@ block content
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Power
+                span.caption-helper  by Ampere
             .portlet-body
               .chart(style='height:400px;')
-                #power
+                #ampere
       .row
         .col-md-12
           .portlet.light.bordered
@@ -85,7 +121,7 @@ block content
                 span.caption-helper  by Active Power
             .portlet-body
               .chart(style='height:400px;')
-                #activepower
+                #active_power
       .row
         .col-md-12
           .portlet.light.bordered
@@ -95,24 +131,4 @@ block content
                 span.caption-helper  by Power Factor
             .portlet-body
               .chart(style='height:400px;')
-                #powerfactor
-      .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Factor                
-            .portlet-body
-              .chart(style='height:400px;')
-                #clust
-      .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Factor                
-            .portlet-body
-              .chart(style='height:400px;')
-                 #real                 
+                #power_factor

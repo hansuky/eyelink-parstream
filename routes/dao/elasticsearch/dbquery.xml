@@ -206,19 +206,37 @@
   ]]></query>
   <query id='selectJiraAccDash'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type" : "access",                    
         "body" : {       
-          "size"   : 10000, 
+          "size"   : 100000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime"],
-          "query" : { "match_all" : { }    }
-           }
+          "query" : { 
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+              "filter" : [
+                {
+                  "bool" : {
+                    "should" : [
+                      { "range" : 
+                        { "@timestamp" :
+                          { "gte" : #START#,
+                            "lte" : #END# }
+                        }
+                      }
+                    ]
+                  }                    
+                }              
+              ]
+            }
+          }
         } 
+      }
   ]]></query>
   <query id='selectScatterSection'><![CDATA[
       {
-        "index" : #today#,
+        "index" : [##index##],
         "type" : "access",                    
         "body" : {       
           "size"   : 10000, 
@@ -753,73 +771,7 @@
         }
       }  
     ]]></query>        
-  </reports>
-  <!--
-  <analysis>
-     <query id='selectDaClusterMasterAll'><![CDATA[
-        {
-          "index" : "",
-          "type" : "",
-          "body" : {
-            "size" : -1,
-            "_source" : ["da_date", "start_date", "end_date", "time_interval"],
-            "query" : {
-              "bool" : {
-                "filter" : {
-                  "range" : {
-                    "da_date" : {
-                      "gte" : '#START_TIMESTAMP#',
-                      "lte" : '#END_TIMESTAMP#'
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-     ]]></query>
-     <query id='selectDaClusterDetailAll'><![CDATA[
-        {
-          "index" : "",
-          "type" : "",
-          "body" : {
-            "size" : -1,            
-            "sort" : [ 
-              { "event_time" : "asc" }
-            ],
-            "query" : { "match_all" : { }     },
-            "bool" : {
-                "filter" : {
-                  "range" : {
-                    "da_date" : {
-                      "gte" : '#START_TIMESTAMP#',
-                      "lte" : '#END_TIMESTAMP#'
-                    }
-                  }
-                }
-              }
-             }
-          }
-     ]]></query>
-     <query id='selectDaClusterMaster'><![CDATA[
-        {
-          "index" : "",
-          "type" : "",
-          "body" : {
-            "size" : -1,            
-            "sort" : [ 
-              { "da_date" : "desc" }
-            "query" : {             ],
-"match_all" : { }
-                }
-             }
-          } 
-     ]]></query>
-     <query id='selectDaClusterMasterByDadate'><![CDATA[
-      select * from tb_da_clustering_master
-        where da_date = #DADATE#
-     ]]></query>
-  </analysis>-->
+  </reports> 
   <sample>
     <query id='selectJiraAccess'><![CDATA[
       {
@@ -835,10 +787,10 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.06.01",
+        "index" : #index#,
         "type" : "access",       
         "body" : {
-          "size"   : 350,
+          "size"   : 100,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
@@ -920,27 +872,7 @@
         "type" : #TYPE#,        
         "id" : #ID#
       }
-     ]]></query>
-  <query id='selectAnomalyRaw'><![CDATA[
-       {
-        "index" : #INDEX#,
-        "type" : #TYPE#,                    
-        "body" : {       
-          "size" : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source": ["power_factor", "active_power", "ampere", "voltage"], 
-          "query": {
-            "bool": {
-              "must": [
-                { "match": {"node_id": "0002.00000039" }},
-                { "match": {
-                  "event_type": "1"
-                }}
-              ]
-            }
-          }
-        } 
-     ]]></query>
+     ]]></query> 
     <query id='selectDaClusterDetailAll'><![CDATA[
        {
         "index" : "corecode-2017-05",
@@ -975,7 +907,7 @@
         "index" : "corecode-*",
         "type" : "corecode",
         "body" : {       
-          "size" : 10000, 
+          "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
           "query" : { 

@@ -1,5 +1,6 @@
-$(function(){
+function getData(){
  var indexs = $('#indexs').val();       
+ indexs = "filebeat_jira_access-";
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var day = new Date().toString().split(' ');    
   var index = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];
@@ -12,7 +13,7 @@ $.ajax({
     success: function(result) {
       console.log(result);
       if (result.rtnCode.code == "0000") {        
-        drawChart(result);
+        drawSankey(result);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -22,14 +23,14 @@ $.ajax({
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });     
-});
-function drawChart(data){     
-  console.log(data.rtnData);
+};
+function drawSankey(data){    
+  
   console.log(data.id);
   var colors = data.id;
   /*var json = JSON.parse(data.rtnData); 
   console.log(json);*/
-    var chart = d3.select("#chart").append("svg").chart("Sankey.Path");
+    var chart = d3.select("#sankey").append("svg").chart("Sankey.Path");
    chart
       .name(label)
       .colorNodes(function(name, node) {
@@ -56,5 +57,5 @@ function drawChart(data){
       } else {
         return null;
       }
-    }s 
+    }
 };

@@ -40,7 +40,7 @@ var BigScatterChart = $.Class({
         'aLineDash' : [2, 5],
         'nGlobalAlpha' : 0.2
       },
-      'sTitle' : 'Big Scatter Chart by Denny',
+      'sTitle' : 'Scatter Chart',
       'htTitleStyle' : {
         'font-size' : '12px',
         'font-weight' : 'bold'

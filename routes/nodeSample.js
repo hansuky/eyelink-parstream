@@ -8,6 +8,9 @@ var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management:'', settings:'', sample:'open selected'};
 
+var indexAcc = global.config.es_index.es_jira;
+
+
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
@@ -57,43 +60,43 @@ router.get('/sampleES_detail', function(req, res, next) {
 });
 
 router.get('/serverMap', function(req, res, next) {
-  res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/serverMap1', function(req, res, next) {
-  res.render('./sample/serverMap1', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/serverMap1', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/serverMap2', function(req, res, next) {
-  res.render('./sample/serverMap2', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/serverMap2', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/scatter01', function(req, res, next) {
-  res.render('./sample/scatter01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/scatter01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/scatter02', function(req, res, next) {
-  res.render('./sample/scatter02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/scatter02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/scatter03', function(req, res, next) {
-  res.render('./sample/scatter03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/scatter03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/scatterTest01', function(req, res, next) {
-  res.render('./sample/scatterTest01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/scatterTest01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/summary', function(req, res, next) {
-  res.render('./sample/summary', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/summary', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/sankey', function(req, res, next) {
-  res.render('./sample/sankey', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/sankey', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/sankey01', function(req, res, next) {
-  res.render('./sample/sankey01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  res.render('./sample/sankey01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/sankey02', function(req, res, next) {
@@ -134,7 +137,7 @@ router.get('/restapi/selectJiraAccReq', function(req, res, next) {
 
 router.get('/restapi/selectJiraAccJson', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccJson');
-  var in_data = {};
+  var in_data = {   index : req.query.index };
   queryProvider.selectSingleQueryByID2("sample","selectJiraAccReq", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
@@ -213,7 +216,7 @@ router.get('/restapi/selectJiraAccJson', function(req, res, next) {
 
 router.get('/restapi/selectJiraAccId', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccId');
-  var in_data = {};
+ var in_data = {   index : req.query.index };
   queryProvider.selectSingleQueryByID2("sample","selectJiraAccReq", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');

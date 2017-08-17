@@ -42,6 +42,11 @@ router.get('/anomaly', function(req, res, next) {
   res.render('./analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
 });
 
+router.get('/anomaly_new', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/anomaly_new', { title: global.config.productname, mainmenu:mainmenu});
+});
+
 router.get('/postTest', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
@@ -152,7 +157,12 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
-      var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: "2017-08-09" };      
+      var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+      var day = new Date().toString();
+      console.log(day);
+      var id = day[3]+'-'+mon[day[1]]+'-'+day[2];
+      console.log(id);
+      var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: "test" };      
       var pattern = out_data[0]._source ;      
       queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {        
         var clust = out_data[0]._source.pattern_data;

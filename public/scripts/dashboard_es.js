@@ -55,37 +55,8 @@ function makeElesJson(data){
   console.log(elesJson);
   getServerMap(elesJson);
 }
+
 function getServerMap(elesJson) {  
-  /*var elesJson = {
-    nodes: [
-      { data: { id: 'p1', name : 4, img: '../assets/sample/back.png' } },
-      { data: { id: 'p2', name : 12, img: '../assets/sample/back.png' } },
-      { data: { id: 'n1', name : 'USER', img: '../assets/images/user1.png' } },
-      { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png' } },
-      { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png' } },
-      { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png' } },
-      { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png', parent : 'p2'} },
-      { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png' } },
-      { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png' } },
-      { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png', parent : 'p1'} },
-      { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' } },
-      { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png' } }],
-    edges: [
-       { data: { count : 8459, source: 'n1', target: 'n3' } },
-       { data: { count : 5922, source: 'n3', target: 'n6' } },
-       { data: { count : 709, source: 'n3', target: 'n7' } },
-       { data: { count : 6849, source: 'n3', target: 'n8' } },
-       { data: { count : 661, source: 'n3', target: 'n5' } },
-       
-       { data: { count : 854, source: 'n5', target: 'n10' } },
-       { data: { count : 760, source: 'n3', target: 'n4' } },
-       { data: { count : 1525, source: 'n2', target: 'n4' } },
-       { data: { count : 205, source: 'n4', target: 'n7' } },
-       { data: { count : 194, source: 'n4', target: 'n5' } },
-       { data: { count : 2285, source: 'n4', target: 'n10' } },
-       { data: { count : 2280, source: 'n4', target: 'n11' } },     
-    ]  
-  };  */
   var cy = cytoscape({
     container: document.getElementById('cy'),
 
@@ -198,17 +169,26 @@ function getServerMap(elesJson) {
     }
   }); 
   console.log(elesJson);
+
+ cy.on('click', 'node', function(evt){
+    console.log(this);
+      console.log( 'clicked ' + this.id() );
+  }); 
 };
 
 function getDash(day) {  
+  console.log(day);
+  var yDay = new Date(day.getTime()-24*60*60*1000);  
   var indexs = $('#indexs').val();
   var d = day.toString().split(' ');  
+  var y = yDay.toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/selectJiraAccDash",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+d[3]+"."+mon[d[1]]+"."+d[2]},
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+              START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"},
     success: function(result) {
       
       if (result.rtnCode.code == "0000") {
@@ -220,7 +200,7 @@ function getDash(day) {
             var a = d._source.timestamp.split(':');            
             var b = a[0].split('/');
             var c = a[3].split(' ');              
-            var date = new Date(b[2], parseInt(mon[b[1]])-1, b[0], a[1], a[2], c[0]).getTime();                                      
+            var date = new Date(b[2], parseInt(mon[b[1]])-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000;             
             if(date < start){            
               start = date;            
             } else if(date > end){            
@@ -230,7 +210,7 @@ function getDash(day) {
                 x : date,
                 y : d._source.responsetime,
                 date : new Date(date),
-               hour : d3.time.hour(new Date(date)),
+               hour : new Date(date).getHours(),
                 type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'), 
                 term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
                 index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
@@ -247,6 +227,7 @@ function getDash(day) {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+
 }
 
 var cnt = 0;
@@ -276,10 +257,17 @@ function drawDash(data, start, end) {
       sYLabel : '(ms)',
       htGuideLine : {
         'nLineWidth' : 1,
-        'aLineDash' : [2, 5],
+        'aLineDash' : [2, 7],
         'nGlobalAlpha' : 0.2
       },
       sXLabel : '',
+      'fXAxisFormat' : function(nXStep, i){        
+        var nMilliseconds = (nXStep * i + this._nXMin),
+          sDay = new Date(nMilliseconds).toString().split(' '),
+          sDate = sDay[4].split(':');
+          
+        return sDate[0]+':'+sDate[1]; 
+      },
       nPaddingRight : 5,
       fOnSelect : function(htPosition, htXY){
         console.log(new Date(start), new Date(end));
@@ -289,15 +277,12 @@ function drawDash(data, start, end) {
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service LIst", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");
         d3.select("#test").select("svg").remove();
-        d3.select("#load").select("svg").remove();
-        var s = new Date(htXY.nXFrom).toString().split(' ');
-        var date = new Date().toString().split(' ');
-        var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+        d3.select("#load").select("svg").remove();        
         $.ajax({
           url: "/dashboard/restapi/selectScatterSection" ,
           dataType: "json",
           type: "get",
-          data: {       today : indexs+date[3]+"."+mon[date[1]]+"."+date[2] , start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
+          data: { start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
           success: function(result) {
             if (result.rtnCode.code == "0000") {            
             var dataS = [];
@@ -307,17 +292,17 @@ function drawDash(data, start, end) {
               var b = a[0].split('/');
               var c = a[3].split(' ');
               var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
-              var date = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);                  
+              var date = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000;                  
               if(date.getTime() < startS){
                 startS = date.getTime();            
               } else if(date > endS){
                 endS = date.getTime();        
               }
               dataS.push({
-                x : date.getTime(),
+                x : date,
                 y : d._source.responsetime,
-                date : date,
-                hour : d3.time.hour(date),
+                date : new Date(date),
+                hour : new Date(date).getHours(),
                 type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'),                
                 term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
                 index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
@@ -391,7 +376,7 @@ function summary(data, start, end) {
   
 var term = ['1s', '3s', '5s', 'Slow', 'Error'];
 chart
-    .width(window.innerWidth*0.20)
+    .width(window.innerWidth*0.14)
     .height(320)    
     .margins({left: 40, top: 5, right: 10, bottom: 40})
     .brushOn(false)    
@@ -409,9 +394,9 @@ chart
     });
      
   load
-    .width(window.innerWidth*0.20)
+    .width(window.innerWidth*0.28)
     .height(310)
-    .margins({left: 65, top: 10, right: 10, bottom: 40})
+    .margins({left: 80, top: 10, right: 10, bottom: 40})
     .brushOn(false)
     .transitionDuration(500)
     .clipPadding(10)
@@ -425,9 +410,10 @@ chart
     .group(stackGroup, term[0], sel_stack('0'))
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
-    .x(d3.time.scale().domain([minDate, maxDate]))
-//    .round(d3.time.hour.round)
-    .xUnits(function(){return 10;})
+    .x(d3.scale.linear().domain([0, 23]))
+    //.x(d3.time.scale().domain([minDate, maxDate]))
+    .round(d3.time.hour.round)
+    .xUnits(function(){return 24;})
     .elasticY(true)
     .centerBar(true)
  //   .gap(gap)
@@ -627,7 +613,7 @@ function drawChart() {
 
     // for Test
     maxDate = new Date(new Date().getTime());
-    minDate = new Date(new Date().getTime()-7*24*60*60*1000);
+    minDate = new Date(new Date().getTime()-7*24*60*60*1000-12*60*60*1000);
 
     var data = out_data.rtnData;
     // console.log(out_data);
@@ -671,18 +657,17 @@ var type = ['success', 'error'];
     volumeChart
       // .width(600)
       .height(77)
-      .margins({top: 0, right: 50, bottom: 20, left: 40})
+      .margins({top: 0, right: 50, bottom: 20, left: 60})
       .dimension(moveDays)
       .group(stackGroup, type[0], sel_stack('0'))
       .centerBar(true)
-      .brushOn(false)
-      .gap(1)
-      .x(d3.time.scale().domain([minDate, maxDate]))      
+      .brushOn(false)      
+      .x(d3.time.scale().domain([minDate, maxDate]))            
       //.yAxisPadding()
       .elasticY(true)
       .round(d3.time.day.round)
       .alwaysUseRounding(true)
-      .xUnits(d3.time.days)
+      .xUnits(function(){return 8;})      
       .title(function(d) {
        for(var i=0; i<type.length; i++) {
         if(this.layer == type[i])                   
@@ -709,6 +694,7 @@ var type = ['success', 'error'];
         d3.select("#test").select("svg").remove();
         d3.select("#load").select("svg").remove();
         /*document.createElement('chart1');*/
+        console.log(d.x);
         getDash(d.x);
       });  
     });    

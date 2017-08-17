@@ -3,7 +3,9 @@ block style
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
-  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')    
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/jquery-ui.css')
+  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')      
+  link(href='/assets/sample/style/sankey01.css', rel='stylesheet')
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
@@ -16,19 +18,30 @@ block script
   script(src='/assets/sample/js/cytoscape-dagre.js')     
   script(type='text/javascript', src='/assets/sample/js/modernizr.js')
   script(type='text/javascript', src='/assets/sample/js/underscore-min.js') 
+  //script(type='text/javascript', src='/assets/sample/js/date.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')   
+  script(src='/assets/sample/js/sankey.js')
+  script(src='/assets/sample/js/d3.chart.min.js')
+  script(src='/assets/sample/js/d3.chart.sankey.min.js')    
   script(type='text/javascript', src="/scripts/dashboard_es.js")
+  script(src='/assets/sample/script/sankey_main.js')    
   script.
     $(document).ready(function(e) {      
       displayCount();
-      drawChart();
+      drawChart(); 
+      getData();
+      $( "#btn_sankey" ).click(function() {
+        console.log('test');
+        $( "#cy" ).slideToggle( "slide" );
+      });
     });
-block content
+block content    
   input#indexs(type='hidden', name='indexs', value=indexs)
   .container-fluid
     .page-content
+      // BEGIN BREADCRUMBS
       .breadcrumbs
         h1 Dashboard
         ol.breadcrumb
@@ -36,142 +49,171 @@ block content
             a(href='#') Home
           li
             a(href='#') Dashboard
-          li.active Dashboard
+          li.active Dashboard  
       .row
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#monCnt.font-blue-sharp 0
-                small TOTAL MONTHLY EVENT
-              .icon
-                i.icon-calendar
-            #monCnt_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
-                  span.sr-only 76% progress
-              .status
-                .status-title  From the previous month
-                .status-number  0%
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#dayCnt.font-green-sharp 0
-                small Total Daily Event
-              .icon
-                i.icon-pie-chart
-            #dayCnt_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
-                  span.sr-only 85% change
-              .status
-                .status-title  From the previous day
-                .status-number  0%
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#errCnt.font-red-haze 0
-                small Daily Fault Event
-              .icon
-                i.icon-speedometer
-            #errCnt_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
-                  span.sr-only 45% grow
-              .status
-                .status-title  From the previous day
-                .status-number  0%
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#power.font-yellow-green 0
-                small Service Status
-              .icon
-                i.icon-energy
-            #power_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
-                  span.sr-only 57% change
-              .status
-                .status-title  From the previous day
-                .status-number  0%
-      .row
-        .col-md-12
+        .col-md-12      
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase One Week Event Count
-                span.caption-helper  by success / error
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart(style='height:80px')
-                #volumn-chart.chart_custom
-      .row
-        .col-md-6(style="height:815px")    
-          .portlet.light(style="height:815px")
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Server Map                
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .row
-                .chart(style="height:730px")
-                  #cy
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Scatter Chart
-                span.caption-helper  Access Log Response Data
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #chart1(style="width:100%; height:100%")
-        .col-md-3
-          .portlet.light.bordered   
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Count by All
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .row
-                .col-md-12(style="height:300px")                 
-                  #test(style="width:100%;")                 
-        .col-md-3
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Count by Hour
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .row
-                .col-md-12(style="height:300px")                  
-                  #load(style="width:100%;")
+                span.caption-subject.bold.uppercase Server Map
+              .btn-group.actions(data-toggle='buttons')
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  Real Time
+                label.btn.btn-default.active
+                  input.toggle(type='radio')
+                  |  Last 5m
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  20m
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  1h
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  3h
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  6h
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  12h
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  1d
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  |  2d
+                label.btn.btn-default
+                  input.toggle(type='radio')
+                  i.fa.fa-search(aria-hidden='true')
+            .portlet-body(style='height:950px;  z-index: 2')
+              a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10;')
+                i.fa.fa-arrow-left                
+                div SANKEY  
+              .chart(style='height:500px; z-index: 2')                 
+                #cy(style='height:500px; width:95%; z-index: 2')                               
+                #sankey(style='height:495px; width:95%;')
+              .portlet-body.smap-chart-box
+                .row
+                  .col-md-12
+                    .portlet
+                      .portlet-title.smap-chart-title
+                        .caption
+                          span.caption-subject.bold
+                            | BACKEND API 
+                            span.badge.badge-danger  12 
+                            i.fa.fa-long-arrow-right(aria-hidden='true')
+                            |   ServerName
+                        .actions
+                          a.btn.btn-sm.red(href='#', onclick="javascript_:window.open('error_pop','pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');")  Error & History 
+                          a.btn-icon-only.grey(href='#', title='도움말')
+                            i.fa.fa-question-circle(data-toggle='modal', aria-hidden='true')
+                    .row(style='height:')
+                      .col-md-2.smap-chart
+                        p Count by All
+                        #test
+                      .col-md-4.smap-chart(id='')
+                        p Count by Hour
+                        #load                      
+                      .col-md-6.smap-chart(id='')
+                        p Access Log Response Data
+                        #chart1
+          .row
+            .col-md-12
+              // BEGIN PORTLET
+              .portlet.light.bordered
+                .portlet-title
+                  .caption.caption-md.font-blue
+                    i.icon-bar-chart.theme-font.hide
+                    span.caption-subject.theme-font.bold.uppercase Summary
+                    span.caption-helper.hide description
+                  .actions
+                    .btn-group.btn-group-devided(data-toggle='buttons')
+                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                        input#option1.toggle(type='radio', name='options')
+                        |                     Today
+                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                        input#option2.toggle(type='radio', name='options')
+                        |                     Week
+                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                        input#option2.toggle(type='radio', name='options')
+                        |                     Month
+                .portlet-body(style='height:150px')
+                  .row.list-separated(style='height:150px') 
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#monCnt.font-blue-sharp 0
+                            small TOTAL MONTHLY EVENT
+                          .icon
+                            i.icon-calendar
+                        #monCnt_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
+                              span.sr-only 76% progress
+                          .status
+                            .status-title  From the previous month
+                            .status-number  0%
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#dayCnt.font-green-sharp 0
+                            small Total Daily Event
+                          .icon
+                            i.icon-pie-chart
+                        #dayCnt_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
+                              span.sr-only 85% change
+                          .status
+                            .status-title  From the previous day
+                            .status-number  0%
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#errCnt.font-red-haze 0
+                            small Daily Fault Event
+                          .icon
+                            i.icon-speedometer
+                        #errCnt_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
+                              span.sr-only 45% grow
+                          .status
+                            .status-title  From the previous day
+                            .status-number  0%
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#power.font-yellow-green 0
+                            small Service Status
+                          .icon
+                            i.icon-energy
+                        #power_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
+                              span.sr-only 57% change
+                          .status
+                            .status-title  From the previous day
+                            .status-number  0%
+                              #sales_statistics.portlet-body-morris-fit.morris-chart
+                .portlet-body.smap-chart-box
+                  .row
+                    .col-md-12
+                      .portlet
+                        .portlet-title.smap-chart-title
+                          .caption
+                            span.caption-subject.bold
+                              | Weekly Count                        
+                      .row(style='height:')
+                        .chart(style='height:80px')
+                          #volumn-chart.chart_custom
+        p.copyright Copyright M2U Technology All rights reserved.       
+    a.go2top(href='#index')
+        i.icon-arrow-up
+
