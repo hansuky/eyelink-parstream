@@ -1,0 +1,20 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')  
+  link(rel='stylesheet', href='/stylesheets/style.css')  
+  link(href='/assets/sample/style/cytoscape04.css', rel='stylesheet')
+block script  
+  script(src='/assets/annie/js/vue.min.js')  
+  script(type='text/javascript', src="/scripts/util.js")  
+  script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+  script(src='/assets/sample/js/cytoscape.min.js')
+  script(src='/assets/sample/script/cytoscape04.js')
+block content
+  .container-fluid
+    .page-content      .row
+        .col-md-12
+
+          .portlet.light.bordered(style='height:600px;')
+            #cy
+            #cy2

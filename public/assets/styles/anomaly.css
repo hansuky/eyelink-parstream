@@ -1,0 +1,95 @@
+path { 
+  stroke-width: 2;
+  fill: none;
+}
+.line { 
+  fill: none;      
+}
+.area {
+    stroke-width: 1;
+  }
+text {
+  font-size: 0.5rem;
+}
+.legend text {   
+    fill: black;
+    font-weight: bold;
+    font-size: 1rem;
+}
+.status text {   
+    fill: black;
+    font-weight: bold;
+    font-size: 1rem;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+} 
+.legend .legend-bg {
+    fill: rgba(0, 0, 0, 0.5);
+    stroke: rgba(0, 0, 0, 0.5);
+    opacity: 0.1;
+  }     
+.status .status-bg {
+    fill: rgba(0, 0, 0, 0.5);
+    stroke: rgba(0, 0, 0, 0.5);
+    opacity: 0.1;
+  }
+div.tooltip { 
+  position: absolute;     
+  text-align: center;     
+  width: 60px;          
+  height: auto;         
+  padding: 2px;       
+  font: 12px sans-serif;    
+  background: lightsteelblue; 
+  border: 0px;    
+  border-radius: 8px;     
+  pointer-events: none;     
+}
+.area.outer,
+.legend .outer {
+  fill: rgba(230, 230, 255, 0.8);
+  stroke: rgba(216, 216, 255, 0.8);
+}
+.area.inner,
+.legend .inner {
+  fill: rgba(200, 200, 255, 0.8);
+  stroke: rgba(180, 180, 255, 0.8);
+}
+.compareline,     
+.legend .compareline {
+  fill: none;
+  stroke: red;
+  stroke-dasharray: 3;
+  stroke-width: 1;
+}
+.compareline2,
+.legend .compareline2 {
+  fill: none;
+  stroke: orange;
+  stroke-dasharray: 3;
+  stroke-width: 1;
+}
+.compareline3,
+.legend .compareline3 {
+  fill: none;
+  stroke: green;
+  stroke-dasharray: 3;
+  stroke-width: 1;
+}      
+.valueline,
+.legend .valueline {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+}
+.live-line,
+.legend .live-line {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+}

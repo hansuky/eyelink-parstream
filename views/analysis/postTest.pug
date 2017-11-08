@@ -1,0 +1,59 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
+  style.    
+    path { 
+        stroke-width: 2;
+        fill: none;
+    }
+    .line {
+      fill: none;      
+    }
+    text {
+      font-size: 0.5rem;
+    }
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }     
+block script
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
+  script(src='/assets/annie/js/vue.min.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/analysis_anomaly.js')  
+  script.
+    $(document).ready(function(e) {      
+      getData();      
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Anomaly
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Analysis
+          li.active Anomaly      
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Factor                
+            .portlet-body
+              form(action='/analysis/restapi/insertAnomal', method='post')
+                | query:
+                input(type='text', name='email', size="335")
+                br
+                |       보내기:
+                input(type='submit')

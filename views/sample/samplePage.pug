@@ -1,0 +1,65 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/dc.css') 
+  link(rel='stylesheet', href='/stylesheets/style.css') 
+  link(href='/assets/sample/style/serverMap1.css', rel='stylesheet')  
+  link(href='/assets/sample/style/jquery.qtip.min.css', rel='stylesheet')    
+  link(href='/assets/sample/style/jquery.cytoscape-navigator.css', rel='stylesheet')
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/jquery-ui.css')
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css')
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/samplePage.css')
+block script  
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')    
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/assets/annie/js/vue.min.js')    
+  script(src='/assets/sample/js/cytoscape.min.js')
+  script(src='/assets/sample/js/dagre.min.js')  
+  script(src='/assets/sample/js/jquery.qtip.min.js')  
+  script(src='/assets/sample/js/cytoscape-qtip.js') 
+  script(src='/assets/sample/js/cytoscape-dagre.js')
+  script(src='/assets/sample/js/cytoscape-navigator.js')
+  script(src='/assets/sample/script/serverMap1.js')  
+  script(type='text/javascript', src='/assets/sample/js/modernizr.js')
+  script(type='text/javascript', src='/assets/sample/js/underscore-min.js') 
+  script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js') 
+  script(src='/assets/sample/script/samplePage.js')
+block content  
+  .container-fluid
+    .page-content
+      .row
+        .col-md-9
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Server Map
+            .portlet-body
+              .chart(style='height:1200px; ')
+                #cy
+                #cynav
+        .col-md-3
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Scatter
+            .portlet-body
+              .chart(style='height:320px; ')
+                #chart1
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark Response Summary
+                span.caption-subject.bold.uppercase.font-blue-sharp 
+            .portlet-body
+              .chart(style='height:320px; ')
+                #test      
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark Load
+                span.caption-subject.bold.uppercase.font-blue-sharp 
+            .portlet-body
+              .chart(style='height:320px; ')
+                #load

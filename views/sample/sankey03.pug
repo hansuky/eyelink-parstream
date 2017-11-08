@@ -1,0 +1,21 @@
+extends ../layout-type01
+block style
+  link(href='/assets/sample/style/sankey01.css', rel='stylesheet')
+block script
+  script(src='/assets/annie/js/d3.v3.min.js')
+  script(src='/assets/sample/js/sankey.js')
+  script(src='/assets/sample/js/d3.chart.min.js')
+  script(src='/assets/sample/js/d3.chart.sankey.min.js')
+  script(src='/assets/sample/script/sankey03.js')
+block content
+  .container-fluid
+    .page-content
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Sankey Chart
+            .portlet-body
+              .chart(style='height:510px; ')
+                #chart

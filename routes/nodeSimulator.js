@@ -3,7 +3,7 @@ var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 router.get('/restapi/getNodeEventDataList', function(req, res, next) {
@@ -16,7 +16,7 @@ router.get('/restapi/getNodeEventDataList', function(req, res, next) {
     }
     var users = out_data[0];
     console.log(mainmenu);
-    res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
+    res.render('./management/user_list', { title: global.config.productname, mainmenu:mainmenu, users:users });
   });
 });
 

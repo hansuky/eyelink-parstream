@@ -1,0 +1,61 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
+  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src="/scripts/trenddata.js")
+  script.
+    $(document).ready(function(e) {
+      // display Count 4 type.
+      //- displayCount();
+
+      // draw Chart
+      drawChart();
+
+      // draw Map
+      //- drawMap();
+
+      // process websocket
+      // FIXME 실행시 map Container 오류 발생함.
+      //- processSocket();
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Dashboard
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Dashboard
+          li.active Dashboard
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Event Trend
+                span.caption-helper  The event counts
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:80px')
+                #volumn-chart.chart_custom

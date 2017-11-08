@@ -4,7 +4,7 @@ var express = require('express');
 require('date-utils');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};
@@ -14,14 +14,14 @@ router.get('/', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/timeseries', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
   mainmenu.timeseries = ' open selected';
-  res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+  res.render('./dashboard/timeseries', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 
@@ -142,6 +142,5 @@ function getTbRawDataByPeriod(from_date, to_date, res) {
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 };
-
 
 module.exports = router;

@@ -586,7 +586,6 @@ function getNodePower(nodeList){
   for(var i=0; i<a.length; i++) {
     node[i] = a[i];
   }  */ 
-  console.log(node);
    $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
     dataType: "json",
@@ -621,6 +620,7 @@ function getNodePower(nodeList){
         });
         console.log(set);
         console.log(idCnt);
+        console.log('oldL : ' + oldL);
         drawNode(set, max, idCnt);
     
       } else {
@@ -633,16 +633,16 @@ function getNodePower(nodeList){
     }
   });
 }
-
+var oldL = 0;
 function drawNode(data, max, idCnt) {
     console.log(idCnt);
     console.log(max);
 
 
-    for(var i = 0; i <= data.length; i++) {
+    for(var i = 0; i <= oldL; i++) {
       d3.select("#nodeChart").select("svg").remove();
     }
-
+    oldL = data.length;
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
 

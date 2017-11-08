@@ -1,14 +1,16 @@
+var Logger = require('./log4js-utils').Logger;
+var logger = new Logger('initApp');
 var CONSTS = require('./consts');
 require('date-utils');
 var fs = require('fs'),
     xml2js = require('xml2js');
 
-var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ global.config.fetchData.method + '-dashboard').DashboardProvider;
-var dashboardProvider = new DashboardProvider();
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var queryProvider = new QueryProvider();
 
 function loadQuery(callback) {
   var parser = new xml2js.Parser();
-  console.log('initApps/loadQuery -> ' + __dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml')
+  logger.info('loadQuery -> ' + __dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml')
   fs.readFile(__dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml', function(err, data) {
     parser.parseString(data, function (err, result) {
     // console.log('initApps/loadQuery -> xml file');
@@ -104,26 +106,26 @@ var cleanXML = function(xml){
 // TO-DO 1시간전까지 데이터 적재 로직 보완 필요함.
 function loadData(callback) {
   var d = new Date();
-  console.log('initApps/loadData -> today : %s', Date.today());
+  logger.debug('loadData -> today : %s', Date.today());
 
   for (var i=0; i<global.config.loaddataonstartup.loading_day; i++) {
-    console.log('initApps/loadData -> day : %s', d.removeDays(1).toFormat('YYYY-MM-DD'));
+    logger.debug('loadData -> day : %s', d.removeDays(1).toFormat('YYYY-MM-DD'));
     var flag = 'R';
     if (i === (global.config.loaddataonstartup.loading_day-1))
       flag = 'C';
-    // console.log('initApps/loadData -> i :   %s, loadind day : %s, flag : %s', i, (CONSTS.CONFIG.LOADING_DAY-1), flag);
+    // console.log('loadData -> i :   %s, loadind day : %s, flag : %s', i, (CONSTS.CONFIG.LOADING_DAY-1), flag);
     var vDate = d.toFormat('YYYY-MM-DD');
     var in_data = {
       LOAD_DATE : vDate,
       START_TIMESTAMP: vDate + ' 00:00:00',
       END_TIMESTAMP: vDate + ' 23:59:59',
       FLAG : flag};
-    dashboardProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
+    queryProvider.selectSingleQueryByID("dashboard", "selectEventRawDataOld", in_data, function(err, out_data, params) {
       // console.log(out_data);
       _rawDataByDay[params.LOAD_DATE] = out_data[0];
       try {
-        console.log('initApps/loadData -> load_date : %s, count : %s', params.LOAD_DATE, global._rawDataByDay[params.LOAD_DATE].length);
-        // console.log('initApps/loadData -> flag : %s', params['FLAG'], params.FLAG);
+        logger.debug('initApps/loadData -> load_date : %s, count : %s', params.LOAD_DATE, global._rawDataByDay[params.LOAD_DATE].length);
+        // console.log('loadData -> flag : %s', params['FLAG'], params.FLAG);
       } catch (e) {
       }
       callback(params);

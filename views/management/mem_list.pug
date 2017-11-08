@@ -1,0 +1,131 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script.
+    $(document).ready(function() { 
+      TableManaged.init();
+      $('a').click(function(event){
+        //- event.preventDefault();
+        if ('deleteMem' != $(this).attr('flag')) return;
+        var roleid = $('#roleid').val();
+        var memid = $(this).attr('memid');
+        if (memid == "") {
+          return false;
+        }        
+        // TODO 메시지 공통 영역으로
+        if (confirm("삭제 하시겠습니까? ")) {
+          $.ajax({
+            url: "/management/mem/" + memid,
+            dataType: "json",
+            type: "DELETE",
+            data: {memid : memid},
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D003") {
+                location.href = "/management/memList/"+roleid;
+              }
+            },
+            error: function(req, status, err) {
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }        
+      });
+      $('#btn_search').click(function() {   
+        //- event.preventDefault();        
+
+        var userid= $('#user').val();
+        var roleid = $('#roleid').val();
+
+        console.log(userid, roleid);
+        if (userid == "") {
+          return false;
+        }        
+        // TODO 메시지 공통 영역으로
+        if (confirm("추가 하시겠습니까? ")) {
+          $.ajax({
+            url: "/management/mem/" + roleid,
+            dataType: "json",
+            type: "POST",
+            data: {userid : userid},
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D001") {
+                location.href = "/management/memList/"+roleid;
+              }
+            },
+            error: function(req, status, err) {
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }        
+      });
+    });
+block content
+  input#roleid(type='hidden', name='roleid', value=roleid)
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Role : #{roleid}
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Role
+      .row
+         .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Add User
+                span.caption-helper  by User List
+            .portlet-body.form
+               form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last                    
+                    label.control-label.col-md-3 Users                    
+                    .col-md-3
+                      select#user.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select User')
+                        each user in users
+                          option #{user._source.user_id}
+                    label.control-label.col-md-1 
+                    .col-md-2.form-inline                     
+                      button#btn_search.btn.blue Add
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Mem List
+                span.caption-helper  #{roleid} Member List 
+            .portlet-body.form
+              table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                thead
+                  tr                    
+                    th(style='text-align:center;')  Role ID
+                    th(style='text-align:center;')  User ID                                                            
+                    th(style='text-align:center;')  Info
+                    th(style='text-align:center;')  Delete
+                tbody
+                  each mem in mems
+                    tr.odd.gradeX                                            
+                      input#id(type='hidden', name='id', value=mem._id)
+                      td  #{mem._source.role_id}
+                      td  #{mem._source.user_id}                                                                    
+                      td
+                        a.btn.default.btn-xs.balck(href='/management/user/'+mem._source.user_id)
+                          i.fa.fa-search
+                          |  Info
+                      td
+                        a.btn.default.btn-xs.balck(flag='deleteMem', memid=''+mem._id)
+                          i.fa.fa-trash-o
+                          |  Delete          

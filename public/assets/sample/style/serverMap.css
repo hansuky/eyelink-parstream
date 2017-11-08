@@ -1,0 +1,29 @@
+body {
+  font-family: helvetica;
+  font-size: 12px;
+}
+#cy {
+  width: 99%;
+  height: 80%;
+  position: relative;
+  left: 1;
+  top: 1;
+  z-index: 999;
+  background: #fff;
+}
+#cynav {
+  position: absolute;
+  border: 1px solid #000;
+  background: #fff;
+  z-index: 99999;
+  width: 450px;
+  height: 200px;
+  bottom: 25px;
+  right: 15px;
+  overflow: hidden;
+}
+
+h1 {
+  opacity: 0.5;
+  font-size: 1em;
+}

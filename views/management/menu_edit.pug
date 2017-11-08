@@ -1,0 +1,76 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(href='/assets/styles/jquery.treegrid.css', rel='stylesheet', type='text/css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(src='/assets/scripts/libs/jquery.treegrid.bootstrap3.js', type='text/javascript')
+  script(src='/assets/scripts/libs/jquery.treegrid.js', type='text/javascript')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src='/scripts/menuTree_edit.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Edit Menu
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/menu') Menu
+          li.active Edit Menu
+      .row
+        .col-md-4
+          .portlet.light
+            .portlet-body
+              .scroller(style='height: 650px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                .table-scrollable.table-scrollable-borderless
+                  #call
+        .col-md-8
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Add Menu
+                span.caption-helper  Membership registration
+            .portlet-body
+              form#create_account.form-horizontal.register-form(onsubmit="return false;")
+                .form-body                
+                  .form-group
+                    label.control-label.col-md-5 Upper Menu
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Uppser Menu
+                      input#upList(type='hidden', name='upList', value=list)
+                      select#upcode.select2.form-control(name='upcode')
+                        each up in list
+                         option(value=''+up.code) #{up.code}-#{up.name}     
+                  .form-group
+                    label.control-label.col-md-5 Code
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Code
+                      .input-icon
+                        i.fa.fa-role
+                        input#code.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='****', name='code')
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Name
+                      .input-icon
+                        i.fa.fa-font
+                        input#name.form-control.placeholder-no-fix(type='text', placeholder='Name', name='name')
+                  .form-group
+                    .col-md-12
+                      #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#register-submit-btn.btn.blue.pull-right Add
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href='/management/menu'") Cancel
+          #edit
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

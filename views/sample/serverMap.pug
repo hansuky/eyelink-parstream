@@ -1,0 +1,25 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')  
+  link(rel='stylesheet', href='/stylesheets/style.css')  
+  link(href='/assets/sample/style/serverMap.css', rel='stylesheet')    
+  link(href='/assets/sample/style/cytoscape-navigator.css', rel='stylesheet')
+block script  
+  script(src='/assets/annie/js/vue.min.js')  
+  script(type='text/javascript', src="/scripts/util.js")    
+  script(src='/assets/sample/js/cytoscape.min.js')
+  script(src='/assets/sample/js/dagre.min.js')   
+  script(src='/assets/sample/js/cytoscape-dagre.js')
+  script(src='/assets/sample/js/cytoscape-navigator.js')
+  script(src='/assets/sample/script/serverMap.js')
+block content
+  .container-fluid
+    .page-content
+      .row
+        .col-md-9
+          .portlet.light.bordered
+            .portlet-body
+              .chart(style='height:700px; ')
+                #cy
+                #cynav

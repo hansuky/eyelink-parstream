@@ -15,13 +15,10 @@ block script
   script.
     $(document).ready(function(e) {
       console.log($('input[name="c0"]').prop('checked'));
-      var dateFormat = 'YYYY-MM-DD';
-      var dateFormat = 'YYYY-MM-DD';
+      var dateFormat = 'YYYY-MM-DD';      
       var daDate = '';
       $('#sdate').val(moment().format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
-      //- $('#edate').val(moment().format(dateFormat));
-      //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       // time series char를 그린다.
       var interval = $("select[name=interval]").val();
       getMasterList(interval);

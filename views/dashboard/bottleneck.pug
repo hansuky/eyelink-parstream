@@ -1,0 +1,242 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')  
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/jquery-ui.css')  
+  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet') 
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')    
+  link(href='https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css', rel='stylesheet')
+  style.
+    td {
+      text-align : center;
+    }
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')  
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src="/scripts/util.js")        
+  script(type='text/javascript', src="/scripts/d3_timeseries_3.js")
+  script(type='text/javascript', src='/assets/sample/js/modernizr.js')
+  script(type='text/javascript', src='/assets/sample/js/underscore-min.js')  
+  script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')  
+  script(src='/assets/sample/js/d3.chart.min.js')
+  script(src='/scripts/bottleneck.js', type='text/javascript')    
+  script(src='https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js')
+  script.
+    $(document).ready(function(e) {
+      var dateFormat = 'YYYY-MM-DD';
+      $('#date').val(moment().format(dateFormat));               
+      var server = $("#server").val();  
+      var selected = {CPU : '', MEMORY : '', SERVICE : ''};
+      var range = 1;      
+      getData(server, selected);                        
+      $('input[name="time"]').on('click change', function(e) {
+        var time = {'2min' : 1, '4min' : 2, '10min' : 5};        
+        range = time[e.target.id];     
+        if(stamp != ''){
+          getChartData(range);
+        }        
+      });   
+      $("#CPU_all").click(function(){        
+        if($(this).attr('value')=='false'){
+          document.getElementById("CPU_all").value = 'true';
+          $('#CPU_70').prop('checked', true).change();
+          $('#CPU_80').prop('checked', true).change();
+          $('#CPU_90').prop('checked', true).change();
+          $('#CPU_100').prop('checked', true).change();
+        } else {
+          document.getElementById("CPU_all").value = 'false';
+          $('#CPU_70').prop('checked', false).change();
+          $('#CPU_80').prop('checked', false).change();
+          $('#CPU_90').prop('checked', false).change();
+          $('#CPU_100').prop('checked', false).change();
+        }
+      });
+      $("#MEMORY_all").click(function(){        
+        if($(this).attr('value')=='false'){
+          document.getElementById("MEMORY_all").value = 'true';
+          $('#MEMORY_70').prop('checked', true).change();
+          $('#MEMORY_80').prop('checked', true).change();
+          $('#MEMORY_90').prop('checked', true).change();
+          $('#MEMORY_100').prop('checked', true).change();
+        } else {
+          document.getElementById("MEMORY_all").value = 'false';
+          $('#MEMORY_70').prop('checked', false).change();
+          $('#MEMORY_80').prop('checked', false).change();
+          $('#MEMORY_90').prop('checked', false).change();
+          $('#MEMORY_100').prop('checked', false).change();
+        }
+      });
+      $("#SERVICE_all").click(function(){        
+        if($(this).attr('value')=='false'){
+          document.getElementById("SERVICE_all").value = 'true';
+          $('#SERVICE_5S').prop('checked', true).change();
+          $('#SERVICE_SLOW').prop('checked', true).change();
+          $('#SERVICE_ERROR').prop('checked', true).change();          
+        } else {
+          document.getElementById("SERVICE_all").value = 'false';
+          $('#SERVICE_5S').prop('checked', false).change();
+          $('#SERVICE_SLOW').prop('checked', false).change();
+          $('#SERVICE_ERROR').prop('checked', false).change();          
+        }
+      });
+      $( "#btn_search" ).click(function() {  
+        $('input:checkbox[name="selected"]').each(function() {          
+          if(this.checked){//checked 처리된 항목의 값            
+            var v = this.value.split('_');
+            selected[v[0]] += this.value+" ";
+          }
+        });          
+         server = $("select[name=server]").val(); 
+        getData(server, selected);
+        selected = {CPU : '', MEMORY : '', SERVICE : ''};
+      });      
+    });
+block content    
+  input#indexs(type='hidden', name='indexs', value=indexs)
+  input#server(type='hidden', name='server', value=server)
+  .container-fluid
+    .page-content
+      // BEGIN BREADCRUMBS
+      .breadcrumbs
+        h1 Bottleneck
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Dashboard
+          li.active Bottleneck
+      .row        
+        .col-md-12      
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark.col-md-8
+                span.caption-subject.bold.uppercase 부하유형 선택              
+            .portlet-body(style='height:140px')                    
+              .col-md-2
+              .col-md-3
+                table
+                  tr(style='height:45px')
+                    th
+                      label.control-label.col-md-12 Server  
+                    th
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server' style='width:120px')
+                        each data in agent                           
+                          #{server}
+                            if data.name==server
+                             option(value='', selected='selected') #{data.name}
+                            else
+                             option #{data.name}                               
+                  tr(style='height:45px')
+                    th
+                      label.control-label.col-md-12 Date
+                    th
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#date.form-control(type='text', name='from' value='' style='width:140px')                   
+              .col-md-4
+                table
+                  tr(style='height:45px')        
+                    th                
+                      label.btn-transparent.control-label.col-md-12  CPU
+                    th
+                      .btn-group.actions(data-toggle='buttons')
+                        input#CPU_70(type='checkbox', data-toggle='toggle', value='CPU_70', data-on="70%", data-off="70%", name='selected')
+                        input#CPU_80(type='checkbox', data-toggle='toggle', value='CPU_80', data-on="80%", data-off="80%", name='selected')
+                        input#CPU_90(type='checkbox', data-toggle='toggle', value='CPU_90', data-on="90%", data-off="90%", name='selected')
+                        input#CPU_100(type='checkbox', data-toggle='toggle', value='CPU_100', data-on="100%", data-off="100%", name='selected')
+                        button#CPU_all.btn.btn-success(value='false') All
+                  tr(style='height:45px')                    
+                    th
+                      label.btn-transparent.control-label.col-md-12  MEMORY
+                    th
+                      .btn-group.actions(data-toggle='buttons')
+                        input#MEMORY_70(type='checkbox', data-toggle='toggle', value='MEMORY_70', data-on="70%", data-off="70%", name='selected')
+                        input#MEMORY_80(type='checkbox', data-toggle='toggle', value='MEMORY_80', data-on="80%", data-off="80%", name='selected')
+                        input#MEMORY_90(type='checkbox', data-toggle='toggle', value='MEMORY_90', data-on="90%", data-off="90%", name='selected')
+                        input#MEMORY_100(type='checkbox', data-toggle='toggle', value='MEMORY_100', data-on="100%", data-off="100%", name='selected')
+                        button#MEMORY_all.btn.btn-success(value='false') All
+                  tr(style='height:45px')
+                    th
+                      label.btn-transparent.control-label.col-md-12  SERVICE
+                    th
+                      .btn-group.actions(data-toggle='buttons')
+                        input#SERVICE_5S(type='checkbox', data-toggle='toggle', value='SERVICE_5S', data-on="5s", data-off="5s", name='selected')
+                        input#SERVICE_SLOW(type='checkbox', data-toggle='toggle', value='SERVICE_SLOW', data-on="Slow", data-off="Slow", name='selected')
+                        input#SERVICE_ERROR(type='checkbox', data-toggle='toggle', value='SERVICE_ERROR', data-on="Error", data-off="Error", name='selected')
+                        button#SERVICE_all.btn.btn-success(value='false') All
+              .col-md-2.form-inline
+                button#btn_search.btn.blue
+                  i.fa.fa-search  Search
+      .row
+        .col-md-4
+          // BEGIN PORTLET
+          .portlet.light.bordered
+            .portlet-title
+              .caption.caption-md.font-blue.col-md-6
+                i.icon-bar-chart.theme-font.hide
+                span.caption-subject.theme-font.bold.uppercase Bottleneck List                                
+                span.caption-helper.hide description
+                form.form-horizontal.form-bordered(onsubmit="return false;") 
+            .portlet-body(style='height:1005px')
+              .scroller(style='height: 990px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                #list
+        .col-md-8      
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Detail
+            .portlet-body(style='height:220px')      
+              #detail   
+        .col-md-8
+          .portlet.light.bordered
+            .portlet-title.smap-chart-title
+              .caption.col-md-5
+                span.caption-subject.bold
+                 | Chart
+              .col-md-4
+                .btn-group.actions(data-toggle='buttons')
+                  label.btn.btn-default
+                    input.toggle(type='radio' id='2min' name='time')
+                    |  2min
+                  label.btn.btn-default
+                    input.toggle(type='radio' id='4min' name='time')
+                    |  4min
+                  label.btn.btn-default
+                    input.toggle(type='radio' id='10min' name='time')
+                    |  10min
+              .col-md-3
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                    label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                      input#syncY.toggle(type='radio', name='options', checked='Y')
+                      i.fa.fa-chain Sync
+                    label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                      input#syncN.toggle(type='radio', name='options')
+                      i.fa.fa-chain-broken Async
+            .portlet-body(style='height:675px')
+              .row
+                .col-md-7.smap-chart
+                  p Access Log Response Data
+                  #chart1
+                .col-md-5.smap-chart
+                  p Count by All
+                  #test                  
+              .portlet-body.smap-chart-box
+                .row(style='height:')
+                  .col-md-4.smap-chart(id='')
+                    p JVM/SYSTEM CPU USAGE Cpu Usage(%)
+                    #ts-chart01
+                  .col-md-4.smap-chart
+                    p HEAP USAGE MEMORY(bytes)
+                    #ts-chart02
+                  .col-md-4.smap-chart(id='')
+                    p PERMGEN USAGE MEMORY(bytes)
+                    #ts-chart03                              
+        p.copyright Copyright M2U Technology All rights reserved.       
+    a.go2top(href='#index')
+        i.icon-arrow-up
+

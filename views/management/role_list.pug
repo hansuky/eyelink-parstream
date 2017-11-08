@@ -1,0 +1,94 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script.
+    $(document).ready(function() {
+      TableManaged.init();
+      $('a').click(function(event){
+        //- event.preventDefault();
+        if ('deleteRole' != $(this).attr('flag')) return;
+
+        var roleid = $(this).attr('roleid');
+        var id = $(this).attr('id');
+        if (id == "") {
+          return false;
+        }        
+        // TODO 메시지 공통 영역으로
+        if (confirm("삭제 하시겠습니까? ")) {
+          $.ajax({
+            url: "/management/role/" + roleid,
+            dataType: "json",
+            type: "DELETE",
+            data: {id:id},
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D003") {
+                location.href = "/management/role";
+              }
+            },
+            error: function(req, status, err) {
+
+              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }
+      });
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Role
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Role
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Role List
+                span.caption-helper  Detail information about roles
+              .tools
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/role/addRole'") Add
+            .portlet-body.form
+              table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                thead
+                  tr
+                    th(style='text-align:center;')  
+                    th(style='text-align:center;')  Role ID
+                    th(style='text-align:center;')  Name                                        
+                    th(style='text-align:center;')  List
+                    th(style='text-align:center;')  Edit &amp; Delete
+                tbody
+                  each role in roles
+                    tr.odd.gradeX
+                      td                        
+                         input#id(type='hidden', name='id', value=role._id)                         
+                      td  #{role._source.role_id}
+
+                      td  #{role._source.role_name}                                            
+                        input#name(type='hidden', name='id', value=role._source.role_name)
+                      td
+                        a.btn.default.btn-xs.green(href='/management/memList/'+role._source.role_id)                          
+                          |  Member List
+                      td                        
+                        a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
+                           i.fa.fa-edit
+                           |  Edit
+                        a.btn.default.btn-xs.balck(flag='deleteRole', id=''+role._id, roleid=''+role._source.role_id)
+                          i.fa.fa-trash-o
+                          |  Delete          
+              

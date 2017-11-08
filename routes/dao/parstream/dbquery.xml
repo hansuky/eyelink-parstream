@@ -197,7 +197,7 @@
       from tb_node_raw
     where event_time >= timestamp #START_TIMESTAMP#
         and event_time < timestamp #END_TIMESTAMP#
-        and node_id = #NODE#
+        and node_id = ##NODE##
     order by event_time
     ]]></query>
     <query id= 'insertClusteringDetail'><![CDATA[
@@ -334,4 +334,12 @@
             #failfirmwareupdate# as failfirmwareupdate
      ]]></query>
   </test>
+  <sample>
+    <query id='scatterPower'><![CDATA[
+      SELECT  event_time, active_power, voltage, apparent_power, amount_active_power 
+      FROM tb_node_raw 
+      WHERE  event_type = 1 and event_month = 11 and event_day IN (29, 30)
+      ORDER BY event_time
+     ]]></query>
+  </sample>
 </queryList>

@@ -3,7 +3,8 @@ var assert = require("assert")
 var request = require("supertest");
 var expect = require("chai").expect;
 // var app = require("../app.js");
-var svr = "http://localhost:5223";
+// var svr = "http://localhost:5223";
+var svr = "http://m2utech.eastus.cloudapp.azure.com:5223";
 var http = require('http');
 
 describe("Test", function(){

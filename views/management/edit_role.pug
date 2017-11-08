@@ -1,0 +1,150 @@
+extends ../layout-type01
+block style
+block script
+  script.
+    $(document).ready(function() {
+      $("#register-submit-btn").click(function() {
+        if ($("#rolename").val() == "") {
+          $("#rolename").focus();
+          $("#register_tnc_error").html("Role Name를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }      
+
+        // TODO 메시지 공통 영역으로
+        if (confirm("저장 하시겠습니까? ")) {
+          var roleid = $("#roleid").val();
+          console.log(roleid);
+          $.ajax({
+            url: "/management/role/" + roleid,
+            dataType: "json",
+            type: "PUT",
+            data:$('#update_account').serialize(),
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D002") {
+                location.href = "/management/role";
+              }
+            },
+            error: function(req, status, err) {
+
+              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }
+      });
+      $("#rolename").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Edit Role
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/role') Users
+          li.active Edit User
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze User Information
+                span.caption-helper  Update role information
+            .portlet-body.from
+              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 Role ID
+                    input#id(type='hidden', name='id', value=role._id)
+                    .col-md-3
+                      span #{role._source.role_id}
+                      input#roleid(type='hidden', name='roleid', value=role._source.role_id)
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      input#rolename.form-control.form-control-inline.input-large(size='16', type='text', value=role._source.role_name, placeholder='rolename', name='rolename')
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Dashboard
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Dashboard
+                  //-     select#dashboard.select2.form-control(name='dashboard')
+                  //-       if menu._source.menu_dashboard=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_dashboard}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_dashboard}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Timeseries
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Timeseries
+                  //-     select#timeseries.select2.form-control(data-show-subtext='true', name='timeseries')
+                  //-       if menu._source.menu_timeseries=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_timeseries}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_timeseries}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Report
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Report                      
+                  //-     select#report.select2.form-control(name='report')
+                  //-       if menu._source.menu_report=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_report}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_report}                          
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Management
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Management
+                  //-     select#management.select2.form-control(name='management')
+                  //-       if menu._source.menu_management=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_management}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_management}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Analysis
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Analysis
+                  //-     select#analysis.select2.form-control(name='analysis')
+                  //-       if menu._source.menu_analysis=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_analysis}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_analysis}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Setting
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Setting
+                  //-     select#setting.select2.form-control(name='setting')
+                  //-       if menu._source.menu_setting=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_setting}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_setting}
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#register-submit-btn.btn.btn-default.blue.pull-right Save
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href='/management/role'") Cancel               
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

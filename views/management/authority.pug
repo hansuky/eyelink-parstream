@@ -1,0 +1,54 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(href='/assets/styles/jquery.treegrid.css', rel='stylesheet', type='text/css')
+  link(rel='stylesheet', type='text/css', href='/assets/styles/authority.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(src='/assets/scripts/libs/jquery.treegrid.bootstrap3.js', type='text/javascript')
+  script(src='/assets/scripts/libs/jquery.treegrid.js', type='text/javascript')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')    
+  script(src='/assets/sample/js/fieldChooser.js')
+  script(type='text/javascript', src='/scripts/authority.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 AUTHORITY
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li.active
+            a(href='/management/Atority') Autority      
+      .row
+        .col-md-4
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Menu
+            .portlet-body
+              .scroller(style='height: 550px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                .table-scrollable.table-scrollable-borderless
+                  #call
+        .col-md-4
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Role Authority
+            .portlet-body(style='height: 555px')
+              #menu                    
+        .col-md-4
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Role List                
+            .portlet-body(style='height: 555px')
+              #role
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

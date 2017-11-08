@@ -1,5 +1,5 @@
 --require should
 --require supertest
 --reporter list
---timeout 20000
+--timeout 5000
 --ui bdd

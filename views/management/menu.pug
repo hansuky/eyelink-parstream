@@ -1,0 +1,51 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(href='/assets/styles/jquery.treegrid.css', rel='stylesheet', type='text/css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(src='/assets/scripts/page/sample-data.js', type='text/javascript')
+  script(src='/assets/plugins/tasks.js', type='text/javascript')
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
+  script(src='/assets/annie/js/vue.min.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/assets/scripts/libs/jquery.treegrid.bootstrap3.js', type='text/javascript')
+  script(src='/assets/scripts/libs/jquery.treegrid.js', type='text/javascript')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script(src='/scripts/menuTree.js', type='text/javascript')  
+  script.
+    $(document).ready(function() {
+      getMenu();
+      TableManaged.init();      
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Menu
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Menu
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title              
+              .caption.col-md-10
+                span.caption-subject.bold.uppercase.font-green-haze Menu List
+                span.caption-helper  Detail information about menu
+              .col-md-1
+                .tools
+                  button.btn.btn-default.green(type='button', onclick="location.href='/management/menu_upper'") Upper Menu
+              .col-md-1
+                .tools
+                  button.btn.btn-default.blue(type='button', onclick="location.href='/management/menu/editMenu'") Edit Menu
+            .portlet-body.form
+              #call

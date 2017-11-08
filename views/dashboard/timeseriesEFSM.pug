@@ -1,0 +1,138 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
+block script
+  script(type='text/javascript', src='/assets/leaflet/d3.js')  
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src="/scripts/d3_timeseries_4.js")
+  script(type='text/javascript', src="/scripts/timeseries_es.js")
+  script.
+    $(document).ready(function() {
+      var dateFormat = 'YYYY-MM-DD';
+      $('#sdate').val(moment().format(dateFormat));1      
+
+      // time series char를 그린다.
+      getData();
+
+      $('#btn_search').click(function() {        
+        var server = $('#server').val().split('&');
+        console.log(server)
+        console.log('/dashboard/timeseries'+server[0]+'?server='+server[1]);
+        location.href='/dashboard/timeseries'+server[0]+'?server='+server[1];    
+      });
+    });
+block content  
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 File Time Series
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Timeseries
+          li.active #{type}
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper Date range and select area
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    .col-md-2
+                    label.control-label.col-md-1 Date Range
+                    .col-md-2
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='' style='width:140px')
+                    label.control-label.col-md-1 Server                    
+                    .col-md-3.form-inline
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')
+                        each data in agent 
+                          #{server}
+                            if data.name==server
+                               option(value=data.type+'&'+data.name, selected='selected') #{data.name}
+                            else
+                              option(value=data.type+'&'+data.name) #{data.name} 
+                    .col-md-2.form-inline                      
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Response Time Count
+                span.caption-helper  res_time / slow / error
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart01
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze System Process
+                span.caption-helper  cpu total pct / memory rss pct
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart02
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Top 10
+                span.caption-helper  process cpu total pct
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart03
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze System Cpu/Memory
+                span.caption-helper  user / system / idle / used / actual used / swap used
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart04
+
+
+
+
