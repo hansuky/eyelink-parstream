@@ -127,6 +127,28 @@ block content
                         .input-icon
                           i.fa.fa-check
                           input#register_password_1.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
+                  .form-body                
+                    .form-group
+                      label.control-label.col-md-5 Position
+                      .col-md-3
+                        label.control-label.visible-ie8.visible-ie9 Position
+                        .input-icon
+                          i.fa.fa-role
+                          input#position.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Position', name='position')
+                  .form-group
+                    label.control-label.col-md-5 Tel
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Tel
+                      .input-icon
+                        i.fa.fa-font
+                        input#tel.form-control.placeholder-no-fix(type='text', placeholder='Tel', name='tel')
+                  .form-group
+                    label.control-label.col-md-5 Mobile
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Mobile
+                      .input-icon
+                        i.fa.fa-font
+                        input#mobile.form-control.placeholder-no-fix(type='text', placeholder='Mobile', name='mobile')      
                   .form-group
                     label.control-label.col-md-5 Email
                     .col-md-3
@@ -134,14 +156,19 @@ block content
                         i.fa.fa-envelope
                         input#email.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
                   .form-group
-                    label.control-label.col-md-5 Select Role
+                    label.control-label.col-md-5 Whether or not
                     .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 User Role
-                      select#userrole.select2.form-control(name='userrole')
-                        option(value='User') User
-                        option(value='Super Manager') Super Manager
-                        option(value='Zone Manager') Zone Manager
-                        option(value='Asset Manager') Asset Manager                      
+                      label.control-label.visible-ie8.visible-ie9 Whether or not
+                      select#use.select2.form-control(name='use')
+                        option(value='Use' selected) Use
+                        option(value='Not') Not
+                  .form-group
+                    label.control-label.col-md-5 Note
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Note
+                      .input-icon
+                        i.fa.fa-role
+                        input#note.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Note', name='note')
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10

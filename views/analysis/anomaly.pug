@@ -1,0 +1,67 @@
+extends ../layout-type01
+block style  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')  
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')  
+  link(rel='stylesheet', href='/assets/styles/anomaly.css')
+block script
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
+  script(src='/assets/annie/js/vue.min.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/analysis_anomaly.js')  
+  script.
+    $(document).ready(function(e) {      
+      getData();            
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Anomaly
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Analysis
+          li.active Anomaly      
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Voltage
+            .portlet-body
+              .chart(style='height:400px;')
+                #voltage
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Ampere
+            .portlet-body
+              .chart(style='height:400px;')
+                #ampere
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Active Power
+            .portlet-body
+              .chart(style='height:400px;')
+                #active_power
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Power Factor
+            .portlet-body
+              .chart(style='height:400px;')
+                #power_factor

@@ -4,7 +4,7 @@ var express = require('express');
 var fs = require('fs');
 var net = require('net');
 var router = express.Router();
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
 var queryProvider = new QueryProvider();
 
@@ -14,27 +14,27 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clustering', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/cluster_detail', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/cluster_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clusteringPop', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/runalaysis', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/runanalysis', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
@@ -75,29 +75,7 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getDaClusterMaster', function(req, res, next) {
-  console.log(req.query);
-  console.log(req.query.interval);
-  var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      INTERVAL: parseInt(req.query.interval),
-      FLAG : 'N'};
-  if(req.query.interval === 'all')  {
-    var sql = "selectDaClusterMasterAll";
-  } else {
-    var sql = "selectDaClusterMaster";
-  }
-  queryProvider.selectSingleQueryByID("analysis", sql, in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-});
+
 
 router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
   console.log(req.query);
@@ -169,12 +147,6 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-
-    // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
-    // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getClusterRawData -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });

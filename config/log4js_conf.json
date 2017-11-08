@@ -1,0 +1,14 @@
+{
+  "appenders": [
+    {
+      "type": "console"
+    },
+    {
+      "type": "file",
+      "filename": "./logs/eyelink.log",
+      "maxLogSize": 1024000,
+      "backups": 5,
+      "category": "eyelink"
+    }
+  ]
+}

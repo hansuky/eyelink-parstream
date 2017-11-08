@@ -1,5 +1,5 @@
 function drawChart() {
-   var sdate = $('#sdate').val();
+  var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   console.log(sdate+', '+edate);
   $.ajax({

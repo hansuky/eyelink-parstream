@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<queryList>
+  <corecode>
+    <query id='insertData'>
+      <![CDATA[
+        {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "node_id" : #node_id#
+            , "event_type" : #event_type#
+            , "measure_time" : #measure_time#
+            , "event_time" : #event_time#
+            , "voltage" : #voltage#
+            , "ampere" : #ampere#
+            , "power_factor" : #power_factor#
+            , "active_power" : #active_power#
+            , "reactive_power" : #reactive_power#
+            , "apparent_power" : #apparent_power#
+            , "amount_of_active_power" : #amount_of_active_power#
+            , "als_level" : #als_level#
+            , "dimming_level" : #dimming_level#
+            , "vibration_x" : #vibration_x#
+            , "vibration_y" : #vibration_y#
+            , "vibration_z" : #vibration_z#
+            , "vibration_max" : #vibration_max#
+            , "noise_origin_decibel" : #noise_origin_decibel#
+            , "noise_origin_frequency" : #noise_origin_frequency#
+            , "noise_decibel" : #noise_decibel#
+            , "noise_frequency" : #noise_frequency#
+            , "gps_longitude" : #gps_longitude#
+            , "gps_latitude" : #gps_latitude#
+            , "gps_altitude" : #gps_altitude#
+            , "gps_satellite_count" : #gps_satellite_count#
+            , "status_als" : #status_als#
+            , "status_gps" : #status_gps#
+            , "status_noise" : #status_noise#
+            , "status_vibration" : #status_vibration#
+            , "status_power_meter" : #status_power_meter#
+            , "status_emergency_led_active" : #status_emergency_led_active#
+            , "status_self_diagnostics_led_active" : #status_self_diagnostics_led_active#
+            , "status_active_mode" : #status_active_mode#
+            , "status_led_on_off_type" : #status_led_on_off_type#
+            , "reboot_time" : #reboot_time#
+            , "event_remain" : #event_remain#
+            , "failfirmwareupdate" : #failfirmwareupdate#
+          }
+        }
+      ]]>
+   </query>
+  </corecode>
+</queryList>

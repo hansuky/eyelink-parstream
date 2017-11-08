@@ -1,0 +1,155 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(type='text/css', href='/assets/leaflet/css/MarkerCluster.Default.css', rel='stylesheet')
+  link(type='text/css', href='/assets/leaflet/css/MarkerCluster.css', rel='stylesheet')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')  
+  link(type='text/css', href='/assets/leaflet/css/leaflet-legend.css', rel='stylesheet')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.js')  
+  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')  
+  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/report_error.js')
+  script.
+    $(document).ready(function() {                          
+       var dateFormat = 'YYYY-MM-DD';
+      $('#sdate').val(moment().subtract(7, 'days').format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));
+      // time series char를 그린다.
+        getData();
+         $('#btn_search').click(function() {     
+          getData();
+        });
+      });                      
+block content  
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Error
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Reports
+          li.active OverView
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date
+                span.caption-helper  Date range 
+            .portlet-body.form
+               form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    .col-md-1
+                    label.control-label.col-md-2 Date Range
+                    .col-md-4
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 
+                    .col-md-4.form-inline                     
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      a(href='javascript:dc.filterAll("error"); dc.renderAll("error");') Reset All
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Count by Day
+                span.caption-helper  
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print                
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #countBar(style='margine:0 auto;')
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Error Type
+                span.caption-helper  
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print                
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #typePie
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Geo Map
+                span.caption-helper  
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print               
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #demo
+                  .map
+                    .map
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Count by Hour
+                span.caption-helper  
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print                
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #hourLine
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Count by Week
+                span.caption-helper  
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print               
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #weekLine
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Count by Month
+                span.caption-helper  
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print                
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #monLine
+    p.copyright Copyright M2U Technology All rights reserved.
+  a.go2top(href='#index')
+    i.icon-arrow-up

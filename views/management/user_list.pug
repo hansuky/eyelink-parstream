@@ -84,22 +84,22 @@ block content
                     th(style='text-align:center;')  Reg Date
                     th(style='text-align:center;')  Edit &amp; Delete
                 tbody
-                  each user in users
-                    tr.odd.gradeX
-                      td  #{user.user_id}
+                  //- each user in users
+                  //-   tr.odd.gradeX
+                  //-     td  #{user.user_id}
 
-                      td  #{user.user_name}
-                      td  #{user.user_email}
-                      td
-                        if user.user_role === 'Super Manager'
-                          span.label.label-sm.label-danger #{user.user_role}
-                        else if user.user_role === 'Zone Manager'
-                          span.label.label-sm.label-primary #{user.user_role}
-                        else if user.user_role === 'Asset Manager'
-                          span.label.label-sm.label-info #{user.user_role}
-                        else if user.user_role === 'User'
-                          span.label.label-sm.label-default #{user.user_role}
-                      td  #{user.reg_date}
+                  //-     td  #{user.user_name}
+                  //-     td  #{user.user_email}
+                  //-     td
+                  //-       if user.user_role === 'Super Manager'
+                  //-         span.label.label-sm.label-danger #{user.user_role}
+                  //-       else if user.user_role === 'Zone Manager'
+                  //-         span.label.label-sm.label-primary #{user.user_role}
+                  //-       else if user.user_role === 'Asset Manager'
+                  //-         span.label.label-sm.label-info #{user.user_role}
+                  //-       else if user.user_role === 'User'
+                  //-         span.label.label-sm.label-default #{user.user_role}
+                  //-     td  #{user.reg_date}
                       td
                         a.btn.default.btn-xs.balck(href='/management/users/'+user.user_id)
                           i.fa.fa-edit
@@ -107,3 +107,4 @@ block content
                         a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+ user.user_id)
                           i.fa.fa-trash-o
                           |  Delete          
+              

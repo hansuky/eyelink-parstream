@@ -5,9 +5,11 @@ var request = require("supertest");
 var expect = require("chai").expect;
 var net = require('net');
 
+require('date-utils');
 var io = require('socket.io-client');
 
 var socketURL = 'http://localhost:5223';
+// var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5223';
 
 var options ={
   transports: ['websocket'],
@@ -42,33 +44,65 @@ describe("Socketio", function(){
 
   });
 
-  describe("refreshData -> ", function() {
+  describe("Simple Test -> ", function() {
     // it('login', login());
 
-    it('전송 및 수신 테스트', function(done) {
+    it('send/receive', function(done) {
       var client1 = io.connect(socketURL, options);
+      // var count = 0;
+      // client1.on('refreshData', function(data){
+      //   console.log(data);
+      //   data.count.should.equal(++count);
+      //   // if (data == 5)
+      //   //   done();
 
-      var count = 0;
-      client1.on('refreshData', function(data){
-        console.log(data);
-        data.count.should.equal(++count);
-        // if (data == 5)
-        //   done();
+      //   client1.emit('getEventListForAlarm', 0);
+      // });
+      var sendData = {clientId : 100, message : 'Hi'}
+      client1.emit('receiveSocketEventTest', sendData);
 
-        client1.emit('getEventListForAlarm', 0);
-      });
-
-      client1.on('sendEventListForAlarm', function(data) {
+      client1.on('sendEventSocketEventTest', function(data) {
         console.log(data);
         done();
-      });
+      })
     })
-
 
   });
 
+  describe("Alarm Test -> ", function() {
+    // it('login', login());
+
+    it('socket.io send/receive', function(done) {
+      var client1 = io.connect(socketURL, options);
+      // var count = 0;
+      // client1.on('refreshData', function(data){
+      //   console.log(data);
+      //   data.count.should.equal(++count);
+      //   // if (data == 5)
+      //   //   done();
+
+      //   client1.emit('getEventListForAlarm', 0);
+      // });
+      var d = new Date();
+      var regTimeStamp = d.removeDays(1).toFormat('YYYY-MM-DDTHH24:MI:SS');
+      var sendData = {
+        applicationType : 'ELAGENT',
+        agentId : 'test_app',
+        timestamp : regTimeStamp,
+        alarmType : 'CPU_90',
+        alarmTypeName : '',
+        message : 'CPU over 90%'}
+      client1.emit('receiveAlarmData', sendData);
+
+      client1.on('returnAlarmData', function(data) {
+        console.log(data);
+        done();
+      })
+    })
+  });
+
   describe("Python -> ", function() {
-    it.only('TO-DO Socket Data 전송 (test 모듈 내에서 connection 처리함)', function(done) {
+    it('TO-DO Socket Data 전송 (test 모듈 내에서 connection 처리함)', function(done) {
 
       // FIX-ME done() 처리 시점 재정의 필요함.
       var datas = '{"start_date":"2017-02-01", "end_date":"2017-02-02", "time_interval":15}';
@@ -90,7 +124,7 @@ describe("Socketio", function(){
 function getConnection(connName, callback){
   // var pUrl = '192.168.10.27';
   var pUrl = 'localhost';
-  var pPort = 5225;
+  var pPort = 5226;
   var client = net.connect({port: pPort, host:pUrl}, function() {
     console.log(connName + ' Connected: ');
     console.log('   local = %s:%s', this.localAddress, this.localPort);

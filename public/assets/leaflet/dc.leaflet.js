@@ -1,5 +1,5 @@
 /*!
- *  dc.leaflet 0.3.0
+ *  dc.leaflet 0.3.2
  *  http://dc-js.github.io/dc.leaflet.js/
  *  Copyright 2014-2015 Boyan Yurukov and the dc.leaflet Developers
  *  https://github.com/dc-js/dc.leaflet.js/blob/master/AUTHORS
@@ -20,7 +20,7 @@
 'use strict';
 
 var dc_leaflet = {
-    version: '0.3.0'
+    version: '0.3.2'
 };
 
 dc_leaflet.leafletBase = function(_chart) {
@@ -267,22 +267,22 @@ dc_leaflet.markerChart = function(parent, chartGroup) {
         return _chart.keyAccessor()(d);
     };
 
-    var _marker = function(d,map) {
-        var marker = new L.Marker(_chart.toLocArray(_chart.locationAccessor()(d)),{
+    var _marker = function(d, map) {
+        var marker = new L.Marker(_chart.toLocArray(_chart.locationAccessor()(d)), {
             title: _chart.renderTitle() ? _chart.title()(d) : '',
             alt: _chart.renderTitle() ? _chart.title()(d) : '',
-            icon: _icon(),
+            icon: _icon(d, map),
             clickable: _chart.renderPopup() || (_chart.brushOn() && !_filterByArea),
             draggable: false
         });
         return marker;
     };
 
-    var _icon = function(d,map) {
+    var _icon = function(d, map) {
         return new L.Icon.Default();
     };
 
-    var _popup = function(d,marker) {
+    var _popup = function(d, marker) {
         return _chart.title()(d);
     };
 
@@ -322,14 +322,14 @@ dc_leaflet.markerChart = function(parent, chartGroup) {
         _layerGroup.clearLayers();
 
         var addList=[];
-        groups.forEach(function(v,i) {
+        groups.forEach(function(v, i) {
             var key = _chart.keyAccessor()(v);
             var marker = null;
             if (!_rebuildMarkers && key in _markerList) {
                 marker = _markerList[key];
             }
             else {
-                marker = createmarker(v,key);
+                marker = createmarker(v, key);
             }
             if (!_chart.cluster()) {
                 _layerGroup.addLayer(marker);
@@ -429,14 +429,14 @@ dc_leaflet.markerChart = function(parent, chartGroup) {
         return _layerGroup;
     };
 
-    var createmarker = function(v,k) {
-        var marker = _marker(v);
+    var createmarker = function(v, k) {
+        var marker = _marker(v, _chart.map());
         marker.key = k;
         if (_chart.renderPopup()) {
-            marker.bindPopup(_chart.popup()(v,marker));
+            marker.bindPopup(_chart.popup()(v, marker));
         }
         if (_chart.brushOn() && !_filterByArea) {
-            marker.on("click",selectFilter);
+            marker.on("click", selectFilter);
         }
         _markerList[k]=marker;
         return marker;
@@ -539,7 +539,7 @@ dc_leaflet.choroplethChart = function(parent, chartGroup) {
         options = JSON.parse(JSON.stringify(options));
         var v = _dataMap[_chart.featureKeyAccessor()(feature)];
         if (v && v.d) {
-            options.fillColor=_chart.getColor(v.d,v.i);
+            options.fillColor=_chart.getColor(v.d, v.i);
             if (_chart.filters().indexOf(v.d.key) !== -1) {
                 options.opacity=0.8;
                 options.fillOpacity=1;
@@ -548,12 +548,12 @@ dc_leaflet.choroplethChart = function(parent, chartGroup) {
         return options;
     };
 
-    var _popup = function(d,feature) {
+    var _popup = function(d, feature) {
         return _chart.title()(d);
     };
 
     _chart._postRender = function() {
-        _geojsonLayer=L.geoJson(_chart.geojson(),{
+        _geojsonLayer=L.geoJson(_chart.geojson(), {
             style: _chart.featureStyle(),
             onEachFeature: processFeatures
         });
@@ -564,7 +564,7 @@ dc_leaflet.choroplethChart = function(parent, chartGroup) {
         _geojsonLayer.clearLayers();
         _dataMap=[];
         _chart._computeOrderedGroups(_chart.data()).forEach(function (d, i) {
-            _dataMap[_chart.keyAccessor()(d)] = {'d':d,'i':i};
+            _dataMap[_chart.keyAccessor()(d)] = {'d':d, 'i':i};
         });
         _geojsonLayer.addData(_chart.geojson());
         return _chart.__doRedraw();
@@ -631,9 +631,9 @@ dc_leaflet.choroplethChart = function(parent, chartGroup) {
         if (v && v.d) {
             layer.key=v.d.key;
             if (_chart.renderPopup())
-                layer.bindPopup(_chart.popup()(v.d,feature));
+                layer.bindPopup(_chart.popup()(v.d, feature));
             if (_chart.brushOn())
-                layer.on("click",selectFilter);
+                layer.on("click", selectFilter);
         }
     };
 
@@ -730,7 +730,6 @@ dc_leaflet.bubbleChart = function (parent, chartGroup) {
     /**
      #### .selectedColor([color])
      Get or set the color of a selected (filter) bubble.
-
      */
     _chart.selectedColor = function (_) {
         if (!arguments.length) {
@@ -754,7 +753,7 @@ dc_leaflet.bubbleChart = function (parent, chartGroup) {
     };
 
     var createmarker = function (v, k) {
-        var marker = _chart.marker()(v);
+        var marker = _chart.marker()(v, _chart.map());
         marker.key = k;
         if (_chart.brushOn()) {
             marker.on("click", selectFilter);

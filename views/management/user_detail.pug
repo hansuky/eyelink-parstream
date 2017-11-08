@@ -43,18 +43,7 @@ block content
                       .form-group
                         label.control-label.col-md-3 Password
                         .col-md-9
-                          span #{user.user_pw}
-                      .form-group.last
-                        label.control-label.col-md-3 Role
-                        .col-md-9                         
-                          if user.user_role === 'Super Manager'
-                            span.label.label-sm.label-danger #{user.user_role}
-                          else if user.user_role === 'Zone Manager'
-                            span.label.label-sm.label-primary #{user.user_role}
-                          else if user.user_role === 'Asset Manager'
-                            span.label.label-sm.label-info #{user.user_role}
-                          else if user.user_role === 'User'
-                            span.label.label-sm.label-default #{user.user_role}       
+                          span #{user.user_pw}                      
               .portlet-footer
                 button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel
                 |  

@@ -2,7 +2,7 @@ var CONSTS = require('./consts');
 var express = require('express');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
@@ -17,7 +17,7 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-  res.render('./node/nodes', { title: 'EyeLink for ParStream' , nodeData:out_data[0]});
+  res.render('./node/nodes', { title: global.config.productname, nodeData:out_data[0]});
     });
 });
 
@@ -31,20 +31,20 @@ router.get('/status', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log(out_data[0]);
-  res.render('./node/node_status', { title: 'EyeLink for ParStream' , nodeData:out_data[0]});  
+  res.render('./node/node_status', { title: global.config.productname, nodeData:out_data[0]});
      });
 });
 
 router.get('/als', function(req, res, next) {
   console.log('node');
   // res.redirect('/dashboard/');
-  res.render('./node/registration_als', { title: 'EyeLink for ParStream' });
+  res.render('./node/registration_als', { title: global.config.productname });
 });
 
 router.get('/gps', function(req, res, next) {
   console.log('node');
   // res.redirect('/dashboard/');
-  res.render('./node/registration_gps', { title: 'EyeLink for ParStream' });
+  res.render('./node/registration_gps', { title: global.config.productname});
 });
 
 

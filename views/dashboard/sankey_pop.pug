@@ -1,0 +1,115 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title= title
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(content='width=device-width, initial-scale=1', name='viewport')
+    meta(content='', name='description')
+    meta(content='', name='author')
+    link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,300', rel='stylesheet', type='text/css')
+    link(href='/assets/fonts/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/fonts/simple-line-icons/simple-line-icons.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/uniform.default.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/bootstrap-switch.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/styles/jquery.treegrid.css', rel='stylesheet', type='text/css')
+    link(href='/assets/plugins/morris.css', rel='stylesheet', type='text/css')
+    link(href='/assets/plugins/tasks.css', rel='stylesheet', type='text/css')
+    link#style_components(href='/assets/css/eyelink-components.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/plugins.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/eyelink-custom.css', rel='stylesheet', type='text/css')
+    link(rel='shortcut icon', href='/assets/images/favicon.ico')
+    link(rel='stylesheet', href='/stylesheets/style.css')    
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')      
+    link(rel='stylesheet', type='text/css', href='/assets/sample/style/sampleES_detail.css')      
+    link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+    script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/bootstrap-hover-dropdown.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.slimscroll.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.blockui.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.uniform.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.treegrid.bootstrap3.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.treegrid.js', type='text/javascript')
+    script(src='/assets/scripts/libs/bootstrap-switch.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/select2.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-ui.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-layout.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
+    script(src='/assets/scripts/page/sample-data.js', type='text/javascript')
+    script(src='/assets/plugins/tasks.js', type='text/javascript')
+    script(src='/assets/scripts/page/layout.js', type='text/javascript')
+    script(type='text/javascript', src='/assets/leaflet/d3.js')
+    script(src='/assets/annie/js/vue.min.js')    
+    script(type='text/javascript', src="/scripts/util.js")
+    script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+    script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+    script(src='/assets/scripts/page/table-managed.js')     
+    script(src='/assets/scripts/eyelink-ui.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-layout.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
+    script(src='/assets/scripts/page/layout.js', type='text/javascript')
+    script(src='/assets/scripts/page/demo.js', type='text/javascript')
+    script(src='/assets/scripts/page/components-pickers.js', type='text/javascript')
+    script(src='/assets/scripts/page/components-dropdowns.js', type='text/javascript')    
+    script(src='/scripts/sankeyErrorList.js', type='text/javascript')    
+    script.
+      jQuery(document).ready(function() {  
+        $('#sample_2 > tbody > tr').click(function(){                       
+          var values = $(this).find('td').map(function(){            
+            return $(this).text();
+          }).get();          
+          console.log($(this)[0].id)          
+          //getTransaction($(this)[0].id, values[0]);
+        });
+         $('.tree-2').treegrid({
+            expanderExpandedClass: 'glyphicon glyphicon-minus',
+            expanderCollapsedClass: 'glyphicon glyphicon-plus'
+          });
+      Metronic.init(); // init metronic core componets
+        eyelinkLayout.init(); // init layout
+        QuickSidebar.init(); // init quick sidebar
+        Layout.init(); // init layout
+        Demo.init(); // init index page
+        ComponentsPickers.init();
+        TableManaged.init();
+        ComponentsDropdowns.init();
+      });
+block content
+  body.body-popup
+    .wrapper
+      header.page-header
+      .container-fluid
+        .content-popup
+          .popup-tit-box           
+           .row
+             .col-md-12
+                h1 EyeLink
+          .row
+            .col-md-12
+              .portlet.light.bordered               
+                .portlet-body.form                                 
+                  table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center; width:99%')
+                    thea
+                      tr                          
+                        th(style='text-align:center;') Time
+                        th(style='text-align:center;') Path
+                        th(style='text-align:center;') Res.(ms)
+                        th(style='text-align:center;') Res Code
+                        th(style='text-align:center;') Bytes
+                        th(style='text-align:center;') Offset
+                        th(style='text-align:center;') Client IP
+                    tbody
+                      each data in list                                                   
+                        tr.odd.gradeX(id=data._id)
+                          td #{data._source.timestamp}
+                          td(style='text-align:left;') #{data._source.request}
+                          td #{data._source.responsetime}
+                          td #{data._source.response}
+                          td #{data._source.bytes}    
+                          td #{data._source.offset}    
+                          td #{data._source.clientip}                          
+          #call              

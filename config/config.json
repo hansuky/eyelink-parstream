@@ -1,19 +1,49 @@
 {
 	"#comment": "Customer module configs",
-	"productname": "EyeLink for ParStream",
+	"productname": "EyeLink",
+	"#pcode": "EFSL",
+	"pcode": "EFSM",
+	"#pcode": "EFMM",
 	"version": "1.0",
 	"username": "root",
 	"password": "foot",
 	"loaddataonstartup": {
 		"active": false,
-		"loading_day": 0,
+		"loading_day": 5,
 		"loading_time": 1
 	},
 	"queryposition": 100,
 	"fetchData": {
-		"database" : "parstream",
-		"#method" : "jdbc",
-		"method" : "nodelib"
+		"#database" : "parstream",
+		"#method" : "nodelib-db",
+		"database" : "elasticsearch",
+		"method" : "nodelib-es",
+		"#method" : "jdbc"
+	},
+	"schedule": {
+		"application_info" : "*/10 * * * * *",
+		"alarm" : "00 */30 * * * *"
+	},
+	"es_index" : {
+		"es_jira" : "filebeat_jira_access-",
+		"es_confluence" : "filebeat_confluence_acc-",
+		"es_metric" : "metricbeat-",
+		"es_user" : "efsm_user",
+		"es_role" :  "efsm_role",		
+		"es_auth_map" : "efsm_auth_map",
+		"es_auth_menu" : "efsm_auth_menu",
+		"es_menu" : "efsm_menu",
+		"es_appinfo" : "efsm_applicationinfo",
+		"es_elagent" : "elagent_test-agent-",
+		"es_alarm" : "efsm_alarm-",
+		"es_corecode" : "corecode-"	
+	},
+	"da_index" : {
+		"clustering_master" : "clustering_master",
+		"clustering_detail" : "clustering_detail",
+		"ad_pattern_data" : "ad_pattern_data",
+		"ad_pattern_info" : "ad_pattern_info",
+		"ad_pattern_matching" : "ad_pattern_matching"
 	},
 	"analysis": {
 		"#host" : "localhost",

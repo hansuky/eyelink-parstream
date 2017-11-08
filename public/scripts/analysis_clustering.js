@@ -1,53 +1,15 @@
-function runAnalysis(interval) {
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();    
-  // TO-DO message config로 처리함.
-  if (confirm("분석에 시간이 걸릴수 있어 Background로 작업이 수행됩니다.\n 진행하시겠습니까? ")) {
-    $.ajax({
-      url: "/analysis/restapi/runAnalysis" ,
-      dataType: "json",
-      type: "post",
-      data: { startDate:sdate, endDate:edate , interval:interval },
-      success: function(result) {
-        if (result.rtnCode.code == "0000") {
-          var master = result.rtnData;        
-        }
-      },
-      error: function(req, status, err) {
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    });
-  }
-}
-
-
 function getMasterList(interval) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  if(sdate === '' && edate === '') {
-    $.ajax({
-      url: "/analysis/restapi/getDaClusterMasterAll" ,
-      dataType: "json",
-      type: "get",
-      success: function(result) {
-        if (result.rtnCode.code == "0000") {
-          var master = result.rtnData;
-          drawMaster(master);
-        }
-      },
-      error: function(req, status, err) {
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    });
-  } else {
-   console.log('%s, %s, %s', sdate, edate, interval);
-   $.ajax({
+  console.log('%s, %s, %s', sdate, edate, interval);
+  $.ajax({
     url: "/analysis/restapi/getDaClusterMaster" ,
     dataType: "json",
     type: "get",
-    data: { startDate:sdate, endDate:edate, interval:interval },
+    data: { sdate:sdate, edate:edate, interval:interval },
     success: function(result) {
       if (result.rtnCode.code == "0000") {
+        console.log(result);
         var master = result.rtnData;          
         drawMaster(master);
       }
@@ -60,18 +22,21 @@ function getMasterList(interval) {
 }
 
 function drawMaster(master) {
+  console.log(master)
   var seatvar = document.getElementsByClassName("masterList");
   var cnt = 0
   $('#masterList').empty();
-  master.forEach(function(d) {   
+  master.forEach(function(d) { 
+    d = d._source.master_result;  
+    console.log(d);
     var sb = new StringBuffer();
     if(cnt == 0) {
-      sb.append('<tr><th>DA Date</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
+      sb.append('<tr><th>DA Time</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
       cnt++;
     }
-    var sdate = d.start_date.split(' ');
-    var edate = d.end_date.split(' ');
-    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
+    var sdate = d.start_date.split('T');
+    var edate = d.end_date.split('T');
+    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_time+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
     if (d.time_interval == 180) {
       var interval = '3hours';
     } else if (d.time_interval == 360) {
@@ -80,9 +45,8 @@ function drawMaster(master) {
       var interval = d.time_interval + 'mins';
     }
     sb.append('<td>'+interval+'</td>');
-    sb.append('<td><a href="#" onclick="javascript_:window.open(');
-    var d = d.da_date.split(' ')
-    var script = "'clusteringPop?dadate="+d[0]+"&datime="+d[1]+"&interval="+interval+"&start="+sdate[0]+"&end="+edate[0]+"', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
+    sb.append('<td><a href="#" onclick="javascript_:window.open(');    
+    var script = "'clusteringPop?dadate="+d.da_time+"&interval="+interval+"&start="+d.start_date+"&end="+d.end_date+"', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
     
     $('#masterList').append(sb.toString());
@@ -96,25 +60,30 @@ function drawCheckChart(factor, daDate) {
     type: "get",
     data: {daDate : daDate},
     success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;
+      if (result.rtnCode.code == "0000") {        
+        console.log(result);
+        var d = result.rtnData;
+        console.log(d);
         var set = [];
-        data.forEach(function(d){
+        for(i=0; i<d['c0_ampere'].length; i++){
           var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-          d.event_time = df.parse(d.event_time);
+          console.log(d['event_time'][i]);
+          var event_time = new Date(d['event_time'][i]);          
+          //console.log(df.parse(new Date(d['event_time'][i])));
           if(factor === 'ampere') {
-            set.push({ time:d.event_time, c0:d.c0_ampere, c1:d.c1_ampere, c2:d.c2_ampere, c3:d.c3_ampere});
+            set.push({ time : event_time, c0:d['c0_ampere'][i], c1:d['c1_ampere'][i], c2:d['c2_ampere'][i], c3:d['c3_ampere'][i]});
           } else if(factor === 'voltage') {
-            set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
+            set.push({ time : event_time, c0:d['c0_voltage'][i], c1:d['c1_voltage'][i], c2:d['c2_voltage'][i], c3:d['c3_voltage'][i]});
           } else if(factor === 'active_power') {
-            set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});
+            set.push({ time : event_time, c0:d['c0_active_power'][i], c1:d['c1_active_power'][i], c2:d['c2_active_power'][i], c3:d['c3_active_power'][i]});
           } else if(factor === 'power_factor') {
-            set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
+            set.push({ time : event_time, c0:d['c0_power_factor'][i], c1:d['c1_power_factor'][i], c2:d['c2_power_factor'][i], c3:d['c3_power_factor'][i]});
           }
-        });        
+        };        
+        console.log(set);
         drawCheckCluster(set, daDate, factor);
       } else {
-        //- $("#errormsg").html(result.message);
+        //- $("#errormsg")[html(result[message);
       }
     },
     error: function(req, status, err) {
@@ -268,12 +237,12 @@ function drawCheckCluster(data, dadate, factor) {
       return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
     });
 
-    singLegend.append('g:rect')
+    singLegend.append('rect')
     .attr('width', legendSize)
     .attr('height', legendSize)
     .style('fill', function(d) {            return color(d);          });
 
-    singLegend.append('g:text')
+    singLegend.append('text')
     .attr('x', legendSize*1.4)
     .attr('y', legendSize/1.3)
     .attr('font-size', function() {
@@ -452,7 +421,7 @@ function drawCheckCluster(data, dadate, factor) {
       this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
-
+     
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)

@@ -1,0 +1,146 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script.
+    $(document).ready(function() {
+
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Assets
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Asset
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Asset List
+                span.caption-helper  Detail information about assets
+              .tools
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/asset/addAsset'") Add
+            .portlet-body.form
+              .row
+                .col-md-3
+                  table#assetType.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                    thead
+                      tr
+                        th(style='text-align:center;')  Seq
+                        th(style='text-align:center;')  Machine
+                        th(style='text-align:center;')
+                    tbody
+                      tr.odd.gradeX
+                        td 1
+                        td
+                          a(href='') Notching
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  Edit
+                          a.btn.default.btn-xs.balck(flag='deleteAsset', id='100', userid='100')
+                            i.fa.fa-trash-o
+                            |  Delete
+                      tr.odd.gradeX
+                        td 2
+                        td
+                          a(href='') Stacking
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  Edit
+                          a.btn.default.btn-xs.balck(flag='deleteAsset', id='100', userid='100')
+                            i.fa.fa-trash-o
+                            |  Delete
+                .col-md-9
+                  table#assetPartList.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                    thead
+                      tr
+                        th(style='text-align:center;')  Seq
+                        th(style='text-align:center;')  Type
+                        th(style='text-align:center;')  Model
+                        th(style='text-align:center;')  Name
+                        th(style='text-align:center;')  No
+                        th(style='text-align:center;')  BarCode
+                        th(style='text-align:center;')  Install Dt
+                        th(style='text-align:center;')  Repair Dt
+                        th(style='text-align:center;')
+                    tbody
+                      tr.odd.gradeX
+                        td 1
+                        td Roller
+                        td Model-01
+                        td Cutter
+                        td CUTT-01-100
+                        td C04220191
+                        td 2017-03-21
+                        td 2017-05-21
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  History
+                      tr.odd.gradeX
+                        td 2
+                        td Roller
+                        td Model-02
+                        td AAAAA
+                        td AAAA-01-100
+                        td A04220191
+                        td 2017-03-21
+                        td 2018-05-21
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  History
+                      tr.odd.gradeX
+                        td 3
+                        td Roller
+                        td Model-03
+                        td BBBBB
+                        td BBBBB-01-100
+                        td B012901921
+                        td 2017-03-21
+                        td 2018-05-21
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  History
+                      tr.odd.gradeX
+                        td 4
+                        td Roller
+                        td Model-04
+                        td CCCCCCCC
+                        td CCCCCCCC-01-100
+                        td A04220191
+                        td 2017-03-21
+                        td 2018-05-21
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  History
+                      tr.odd.gradeX
+                        td 5
+                        td Roller
+                        td Model-05
+                        td DDDDDD
+                        td D-01-100
+                        td A04220191
+                        td 2017-03-21
+                        td 2018-05-21
+                        td
+                          a.btn.default.btn-xs.balck(href='/management/asset/100')
+                            i.fa.fa-edit
+                            |  History

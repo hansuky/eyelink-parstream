@@ -1,0 +1,117 @@
+extends ../layout-type01
+block style          
+  link(rel='stylesheet', href='/assets/styles/res_req.css')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/res_req.js')  
+  script.
+    $(document).ready(function() {                          
+       var dateFormat = 'YYYY-MM-DD';
+      $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));
+      // time series char를 그린다.
+        makeIndex();
+         $('#btn_search').click(function() {     
+          d3.select("svg").remove();
+          d3.select("svg").remove();
+          d3.select("svg").remove();
+          makeIndex();
+        });
+    });                      
+block content
+  input#indexs(type='hidden', name='indexs', value=indexs)
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Res&Req
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Reports
+          li.active OverView
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date
+                span.caption-helper  Date range 
+            .portlet-body.form
+               form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last                    
+                    label.control-label.col-md-2 Date Range
+                    .col-md-3
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')                        
+                    label.control-label.col-md-1 Weeks
+                    .col-md-1
+                      select#weeks.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Week')
+                        option(value=4 selected) 4
+                        option(value=6) 6
+                        option(value=8) 8
+                        option(value=10) 10
+                        option(value=12) 12
+                    label.control-label.col-md-1 Months
+                    .col-md-1
+                      select#months.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Monthh')
+                        option(value=4) 4
+                        option(value=6 selected) 6
+                        option(value=8) 8
+                        option(value=10) 10
+                        option(value=12) 12
+                    label.control-label.col-md-1 
+                    .col-md-2.form-inline                     
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search      
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Count by Day
+                span.caption-helper  검색된 기간 내의 일별 차트
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #day        
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Count by Week
+                span.caption-helper  마지막 날부터 지정된 주 수 만큼의 주별 차트
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #week        
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Count by Month
+                span.caption-helper  마지막 날부터 지정된 월 수 만큼의 월별 차트
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #month        

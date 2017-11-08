@@ -1,0 +1,33 @@
+body {        
+        margin: auto;
+      }
+      #chart {
+        height: 500px;
+        font: 13px sans-serif;
+      }
+      .node rect {
+        fill-opacity: .9;
+        shape-rendering: crispEdges;
+        stroke-width: 0;
+      }
+      .node text {
+        text-shadow: 0 1px 0 #fff;
+      }
+      .link {
+        fill: none;
+        stroke: #000;
+        stroke-opacity: .2;
+      }
+    div.tooltip { 
+      color : white;
+      position: absolute;     
+      text-align: center;     
+      width: 60px;          
+      height: auto;         
+      padding: 2px;       
+      font: 12px sans-serif;    
+      background: red; 
+      border: 0px;    
+      border-radius: 8px;     
+      pointer-events: none;     
+      

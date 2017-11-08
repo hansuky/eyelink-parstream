@@ -1,0 +1,139 @@
+extends ../layout-type01
+block style
+block script
+ script.
+    $(document).ready(function() {      
+      $("#register-submit-btn").click(function() {
+        if ($("#roleid").val() == "") {
+          $("#roleid").focus();
+          $("#register_tnc_error").html("Role ID를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+        if ($("#rolename").val() == "") {
+          $("#rolename").focus();
+          $("#register_tnc_error").html("Role Name를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }      
+
+        // TODO 메시지 공통 영역으로
+        if (confirm("등록 하시겠습니까? ")) {
+          var roleid = $("#roleid").val();
+          $.ajax({
+            url: "/management/role/" + roleid,
+            dataType: "json",
+            type: "POST",
+            data:$('#create_account').serialize(),
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D001") {
+                location.href = "/management/role";
+              }
+             },
+            error: function(req, status, err) {
+              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }
+      });
+
+      $("#roleid").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });
+      $("#rolename").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });     
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Add Role
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/role') Role           
+          li.active Add Role
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Add Role
+                span.caption-helper  Membership registration
+            .portlet-body
+              form#create_account.form-horizontal.register-form(onsubmit="return false;")
+                .form-body                
+                  .form-group
+                    label.control-label.col-md-5 Role ID
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Role ID
+                      .input-icon
+                        i.fa.fa-role
+                        input#roleid.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Role ID', name='roleid')
+                  .form-group
+                    label.control-label.col-md-5 Role Name
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Role Name
+                      .input-icon
+                        i.fa.fa-font
+                        input#rolename.form-control.placeholder-no-fix(type='text', placeholder='Role Name', name='rolename')
+                  .form-group
+                    label.control-label.col-md-5 Dashboard
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Dashboard
+                      select#dashboard.select2.form-control(name='dashboard')
+                        option(value='No' selected) No
+                        option(value='Yes') Yes       
+                  .form-group
+                    label.control-label.col-md-5 Timeseries
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Timeseries
+                      select#timeseries.select2.form-control(name='timeseries')
+                          option(value='No' selected) No
+                          option(value='Yes') Yes                          
+                  .form-group
+                    label.control-label.col-md-5 Report
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Report                      
+                      select#report.select2.form-control(name='report')
+                          option(value='No' selected) No
+                          option(value='Yes') Yes                          
+                  .form-group
+                    label.control-label.col-md-5 Management
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Management
+                      select#management.select2.form-control(name='management')
+                          option(value='No' selected) No
+                          option(value='Yes') Yes                                                
+                  .form-group
+                    label.control-label.col-md-5 Analysis
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Analysis
+                      select#analysis.select2.form-control(name='analysis')
+                          option(value='No' selected) No
+                          option(value='Yes') Yes
+                  .form-group
+                    label.control-label.col-md-5 Setting
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Setting
+                      select#setting.select2.form-control(name='setting')
+                          option(value='No' selected) No
+                          option(value='Yes') Yes
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#register-submit-btn.btn.blue.pull-right Add
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href='/management/role'") Cancel                    
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

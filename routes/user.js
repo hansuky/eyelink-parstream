@@ -2,7 +2,7 @@
 
 var express = require("express");
 var router = express.Router();
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
 var queryProvider = new QueryProvider();
 
@@ -31,12 +31,12 @@ router.post("/", function(req, res){
         rtnCode = CONSTS.getErrData('0001');
       }
      });
-   var in_data = {      
+   var in_data = {
         USERNUM:out_data[0],
         USERNAME: req.query.username,
         USERID: req.query.userid,
         PASSWORD: req.query.password,
-        USERROLE: req.query.userrole      
+        USERROLE: req.query.userrole
       };
       console.log(in_data);
   queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {
@@ -44,7 +44,7 @@ router.post("/", function(req, res){
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
-    }          
+    }
  User.create(req.body, function(err, user){
   if(err) return res.json(err);
   res.redirect("/users");

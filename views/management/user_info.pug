@@ -1,0 +1,122 @@
+extends ../layout-type01
+block style
+block script
+  script.
+    $(document).ready(function() {
+      $("#register-submit-btn").click(function() {
+        if ($("#username").val() == "") {
+          $("#username").focus();
+          $("#register_tnc_error").html("User Name를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+        if ($("#register_password").val() == "") {
+          $("#register_password").focus();
+          $("#register_tnc_error").html("Password 를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        } else if ($("#register_password").val() != $("#register_password_1").val()) {
+          $("#register_password").focus();
+          $("#register_tnc_error").html("Password가 다릅니다. 다시 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+        if ($("#email").val() == "") {
+          $("#email").focus();
+          $("#register_tnc_error").html("Email을 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        } else {
+          var a = $("#email").val().split('@');
+          console.log(a);
+          if (a[1] == null) {
+            $("#email").focus();
+            $("#register_tnc_error").html("Email주소를 정확히 입력하세요");
+            $("#register_tnc_error").show();
+            return false;
+          }
+        }
+
+        // TODO 메시지 공통 영역으로
+        if (confirm("저장 하시겠습니까? ")) {
+          var userid = $("#userid").val();
+          $.ajax({
+            url: "/management/users/" + userid,
+            dataType: "json",
+            type: "PUT",
+            data:$('#update_account').serialize(),
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D002") {
+                location.href = "/management/users";
+              }
+            },
+            error: function(req, status, err) {
+
+              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }
+      });
+      $("#username").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 User Info
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/users') Users
+          li.active User
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze User Information
+                span.caption-helper  #{username}'s information
+            .portlet-body.from
+              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 User ID
+                    input#id(type='hidden', name='id', value=user._id)
+                    .col-md-3
+                      span #{user._source.user_id}
+                      input#userid(type='hidden', name='userid', value=user._source.user_id)
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      span #{user._source.user_name}
+                  .form-group
+                    label.control-label.col-md-5 Password
+                    .col-md-3
+                      span #{user._source.user_pw}                  
+                  .form-group
+                    label.control-label.col-md-5 Email
+                    .col-md-3
+                      span #{user._source.user_email}
+                  .form-group
+                    label.control-label.col-md-5 Atteched                    
+                    .col-md-3
+                      each map in maps
+                        span #{map._source.role_id}
+                        br                        
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')            
+                    .col-md-8
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href=history.back()") Back        
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

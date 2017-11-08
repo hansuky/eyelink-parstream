@@ -59,10 +59,36 @@ block script
           });
         }
       });
-
       $("#username").keydown(function() {
         $("#register_tnc_error").html("");
         $("#register_tnc_error").hide();
+      });
+      $('a').click(function(event){
+        //- event.preventDefault();
+        if ('deleteMem' != $(this).attr('flag')) return;
+        var userid = $('#userid').val();
+        var memid = $(this).attr('memid');
+        if (memid == "") {
+          return false;
+        }        
+        // TODO 메시지 공통 영역으로
+        if (confirm("삭제 하시겠습니까? ")) {
+          $.ajax({
+            url: "/management/mem/" + memid,
+            dataType: "json",
+            type: "DELETE",
+            data: {memid : memid},
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D003") {
+                location.href = "/management/users/"+userid;
+              }
+            },
+            error: function(req, status, err) {
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }        
       });
     });
 block content
@@ -90,35 +116,65 @@ block content
                 .form-body
                   .form-group
                     label.control-label.col-md-5 User ID
+                    input#id(type='hidden', name='id', value=user._id)
                     .col-md-3
-                      span #{user.user_id}
-                      input#userid(type='hidden', name='userid', value=user.user_id)
+                      span #{user._source.user_id}
+                      input#userid(type='hidden', name='userid', value=user._source.user_id)
                   .form-group
                     label.control-label.col-md-5 Name
                     .col-md-3
-                      input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
+                      input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_name, placeholder='Username', name='username')
                   .form-group
                     label.control-label.col-md-5 Password
                     .col-md-3
-                      input#register_password.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password')
+                      input#register_password.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password')
                   .form-group
                     label.control-label.col-md-5 Re-type Your Password
                     .col-md-3
-                      input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password_1')
+                      input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password_1')
+                  .form-group
+                    label.control-label.col-md-5 Position
+                    .col-md-3
+                      input#position.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.position, placeholder='position', name='position')
+                  .form-group
+                    label.control-label.col-md-5 Tel
+                    .col-md-3
+                      input#tel.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.tel, placeholder='tel', name='tel')
+                  .form-group
+                    label.control-label.col-md-5 Mobile
+                    .col-md-3
+                      input#mobile.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.mobile, placeholder='mobile', name='mobile')
                   .form-group
                     label.control-label.col-md-5 Email
                     .col-md-3
-                      input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email')
+                      input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_email, placeholder='email', name='email')
                   .form-group
-                    label.control-label.col-md-5 Select Role
+                    label.control-label.col-md-5 Whether or not
                     .col-md-3
-                      select#userrole.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
-                        option #{user.user_role}
-                        option  User
-                        option  Asset Manager
-                        option Zone Manager
-                        option Super Manager
-                      span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
+                      label.control-label.visible-ie8.visible-ie9 Whether or not
+                      select#use.select2.form-control(data-show-subtext='true', name='use')
+                        if user._source.use=='Use'
+                          option(value='', selected='selected') #{user._source.use}
+                          option Not
+                        else
+                          option Use                                
+                          option(value='', selected='selected') #{user._source.use}
+                  .form-group
+                    label.control-label.col-md-5 Note
+                    .col-md-5
+                      input#note.form-control.form-control-inline.input-large(size='100', type='text', value=user._source.note, placeholder='note', name='note')
+                  .form-group
+                    label.control-label.col-md-5 Atteched                    
+                    .col-md-3
+                      each map in maps
+                        .form-group
+                          .col-md-6
+                            span #{map._source.role_id}
+                          .col-md-6
+                            td                        
+                            a.btn.default.btn-xs.balck(flag='deleteMem', memid=''+map._id)
+                              i.fa.fa-trash-o
+                              |  Delete
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10

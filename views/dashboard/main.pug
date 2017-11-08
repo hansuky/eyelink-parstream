@@ -1,38 +1,93 @@
 extends ../layout-type01
 block style
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/jquery-ui.css')
+  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')      
+  link(href='/assets/sample/style/sankey01.css', rel='stylesheet')  
+  link(href='/assets/sample/style/cytoscape-navigator.css', rel='stylesheet')  
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
-  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
-  script(type='text/javascript', src='/socket.io/socket.io.js')
-  script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/dashboard.js")
+  script(type='text/javascript', src='/socket.io/socket.io.js') 
+  script(type='text/javascript', src="/scripts/util.js")  
+  script(src='/assets/sample/js/cytoscape.min.js')  
+  script(src='/assets/sample/js/dagre.min.js')
+  script(src='/assets/sample/js/cytoscape-dagre.js')     
+  script(src='/assets/sample/js/cytoscape-navigator.js')
+  script(type='text/javascript', src='/assets/sample/js/modernizr.js')
+  script(type='text/javascript', src='/assets/sample/js/underscore-min.js')   
+  script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')   
+  script(src='/assets/sample/js/sankey.js')
+  script(src='/assets/sample/js/d3.chart.min.js')
+  script(src='/assets/sample/js/d3.chart.sankey.min.js')    
+  script(type='text/javascript', src="/scripts/dashboard_file.js")  
+  script(type='text/javascript', src="/scripts/dashboard_agent.js")  
+  script(type='text/javascript', src="/scripts/dashboard_all.js") 
   script.
     $(document).ready(function(e) {
-      // display Count 4 type.
-      displayCount();
-
-      // draw Chart
-      drawChart();
-
-      // draw Map
-      //- drawMap();
-
-      // process websocket
-      // FIXME 실행시 map Container 오류 발생함.
-      //- processSocket();
+      var server = $("#server").val();      
+      var type = $("#type").val();   
+      if(cyclick == ''){ cyclick = "jira";  }
+      var now = new Date();      
+      if(server === "test-agent"){
+        getAgentData(now);
+        displayCountAgent();        
+      } else if(server === "jira_access"){
+        displayCount();        
+        makeDatabyDay(now);
+        drawWeekly();
+      } else if(server === "all"){      
+        getAllData(now.getTime());
+      }
+      $( "#btn_sankey" ).click(function() {      
+        $( "#cy" ).slideToggle( "slide" );
+      });
+      $( "#btn_search" ).click(function() {          
+        location.href='/dashboard/?server='+$("select[name=server]").val();        
+      });
+      $("#btn_timeseries").click(function(){        
+        var server = $("#server").val();        
+        var type = $("#type").val();                   
+        if(server=="all"){
+          if(cyclick == "TESTAPP") {
+            location.href='/dashboard/timeseriesAgent?server=test-agent';
+          } else if(cyclick == "jira") {
+            location.href='/dashboard/timeseriesLog?server=jira_access';
+          }
+        } else {
+          location.href='/dashboard/timeseries'+type+'?server='+server;
+        }
+      });  
+      $('input[type="radio"]').on('click change', function(e) {
+        var time = { '1min' : 1*60*1000, '5min' : 5*60*1000, '10min' : 10*60*1000,  '15min' : 15*60*1000, '30min' : 30*60*1000, '1hour' : 60*60*1000, '3hour' : 3*60*60*1000 };
+        var server = $("#server").val();      
+        var data = { date : new Date().getTime(), gap : time[e.target.id] };
+        if(server == "jira_access"){          
+          getDash(data);
+          getMap(data);
+        } else if(server == "test-agent") {        
+          drawDashAgent(data);
+        } else if(server == "all") { 
+          if(cyclick == "jira") {
+            getDash(data);            
+          } else if(cyclick == "TESTAPP") {
+            drawDashAgent(data);
+          }
+        }        
+      });
     });
-block content
+block content      
+  input#server(type='hidden', name='server', value=server)
+  input#type(type='hidden', name='type', value=type)
   .container-fluid
     .page-content
+      // BEGIN BREADCRUMBS
       .breadcrumbs
         h1 Dashboard
         ol.breadcrumb
@@ -40,167 +95,177 @@ block content
             a(href='#') Home
           li
             a(href='#') Dashboard
-          li.active Dashboard
-      .row
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#mevent-count.font-blue-sharp 0
-                small TOTAL MONTHLY EVENT
-              .icon
-                i.icon-calendar
-            #mevent_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
-                  span.sr-only 76% progress
-              .status
-                .status-title  From the previous month
-                .status-number  0%
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#event-count.font-green-sharp 0
-                small Total Daily Event
-              .icon
-                i.icon-pie-chart
-            #event_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
-                  span.sr-only 85% change
-              .status
-                .status-title  From the previous day
-                .status-number  0%
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#fault-count.font-red-haze 0
-                small Daily Fault Event
-              .icon
-                i.icon-speedometer
-            #fault_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
-                  span.sr-only 45% grow
-              .status
-                .status-title  From the previous day
-                .status-number  0%
-        .col-lg-3.col-md-3.col-sm-6.col-xs-12
-          .dashboard-stat2
-            .display
-              .number
-                h3#power.font-yellow-green 0
-                small Daily Active Power
-              .icon
-                i.icon-energy
-            #power_status.progress-info
-              .progress
-                span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
-                  span.sr-only 57% change
-              .status
-                .status-title  From the previous day
-                .status-number  0%
+          li.active Dashboard  
       .row
         .col-md-12
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Event Trend
-                span.caption-helper  The event counts
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:80px')
-                #volumn-chart.chart_custom
-      .row
-        .col-md-6
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-blue-sharp Zone/Node Map
-                span.caption-helper  Zone/Node Map
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .row
-                .col-md-3
-                  #bubble-map-pie(style="width:100%; height:100%")
-                    //- div.pie
-                    //- div.map(style="width:300px; height:100px")
-                .col-md-9
-                  #bubble-map-map(style="width:100%; height:100%")
-                    //- div.pie
-                    //- div.map(style="width:300px; height:100px")
-              //- .chart
-              //-   div.map-container
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Event / Fault Count
-                span.caption-helper  Event / Fault Count
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #move-chart(style="width:100%; height:100%")
-      .row
-        .col-md-8
+                span.caption-subject.bold.uppercase.font-blue-sharp Option
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-2 Server                                        
+                    .col-md-2.form-inline
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                        each data in agent    
+                          #{server}
+                            if data.name==server
+                             option(value=data.name, selected='selected') #{data.name}
+                            else
+                             option #{data.name}                                                  
+                    .col-md-2.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
+                    .btn-group.actions(data-toggle='buttons')
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='1min')
+                        |  Last 1m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='5min')
+                        |  Last 5m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='10min')
+                        |  Last 10m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='15min')
+                        |  Last 15m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='30min')
+                        |  Last 30m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='1hour')
+                        |  Last 1h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='3hour')
+                        |  Last 3h                      
+      .row        
+        .col-md-12      
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase ACTIVE POWER / NOISE / VIBRATION
-                span.caption-helper  ACTIVE POWER / NOISE / VIBRATION
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .row
-                .col-md-3(style="height:300px")
-                  p Active Power
-                  #plot01-chart.chart(style="width:100%; height:90%")
-                .col-md-3(style="height:300px")
-                  p Noise
-                  #plot02-chart.chart(style="width:100%; height:90%")
-                .col-md-3(style="height:300px")
-                  p Vibration
-                  #plot03-chart.chart(style="width:100%; height:90%")
-                .col-md-3(style="height:300px")
-                  p Event Type
-                  #plot_pie-chart.chart(style="width:100%; height:90%")
-        .col-md-4
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze LiveData
-                span.caption-helper  Sensor Live Data
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #series-chart(style="width:100%; height:100%")
+                span.caption-subject.bold.uppercase Server Map
+            .portlet-body(style='height:850px;  z-index: 2')
+              #{server}
+                if server != "test-agent"
+                  a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
+                    i.fa.fa-arrow-left                
+                    div SANKEY  
+              .chart(style='height:400px; z-index: 2')                 
+                #cy(style='height:400px; width:89%; z-index: 2')                 
+                #cynav(style='height:140px; width:11%; z-index: 1')     
+                #sankey(style='height:395px; width:89%;')
+              .portlet-body.smap-chart-box
+                .row
+                  .col-md-12
+                    .portlet
+                      .portlet-title.smap-chart-title
+                        .caption
+                          span.caption-subject.bold
+                            | Summary
+                        .actions
+                          button#btn_timeseries.btn.btn-sm.blue  Timeseries
+                          if server == "jira_access"
+                            a.btn.btn-sm.red(href='#', onclick="javascript_:window.open('error_pop_jira','pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');")  Error 
+                          if server == "test-agent"
+                            a.btn.btn-sm.red(href='#', onclick="javascript_:window.open('error_pop_agent','pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');")  Error 
+                          //- a.btn-icon-only.grey(href='#', title='도움말')
+                          //-   i.fa.fa-question-circle(data-toggle='modal', aria-hidden='true')
+                    .row(style='height:')
+                      .col-md-2.smap-chart
+                        p Count by All
+                        #test
+                      .col-md-4.smap-chart(id='')
+                        p Count by Hour
+                        #load                      
+                      .col-md-6.smap-chart(id='')
+                        p Access Log Response Data
+                        #chart1
+          .row
+            .col-md-12
+              // BEGIN PORTLET
+              .portlet.light.bordered
+                .portlet-title
+                  .caption.caption-md.font-blue
+                    i.icon-bar-chart.theme-font.hide
+                    span.caption-subject.theme-font.bold.uppercase Count
+                    span.caption-helper.hide description
+                .portlet-body(style='height:150px')
+                  .row.list-separated(style='height:150px') 
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#monCnt.font-blue-sharp 0
+                            small TOTAL MONTHLY EVENT
+                          .icon
+                            i.icon-calendar
+                        #monCnt_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
+                              span.sr-only 76% progress
+                          .status
+                            .status-title  From the previous month
+                            .status-number  0%
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#dayCnt.font-green-sharp 0
+                            small Total Daily Event
+                          .icon
+                            i.icon-pie-chart
+                        #dayCnt_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
+                              span.sr-only 85% change
+                          .status
+                            .status-title  From the previous day
+                            .status-number  0%
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#errCnt.font-red-haze 0
+                            small Daily Fault Event
+                          .icon
+                            i.icon-speedometer
+                        #errCnt_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
+                              span.sr-only 45% grow
+                          .status
+                            .status-title  From the previous day
+                            .status-number  0%
+                    .col-lg-3.col-md-3.col-sm-6.col-xs-12
+                      .dashboard-stat2
+                        .display
+                          .number
+                            h3#power.font-yellow-green 0
+                            small Service Status
+                          .icon
+                            i.icon-energy
+                        #power_status.progress-info
+                          .progress
+                            span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
+                              span.sr-only 57% change
+                          .status
+                            .status-title  From the previous day
+                            .status-number  0%
+                              #sales_statistics.portlet-body-morris-fit.morris-chart
+                .portlet-body.smap-chart-box
+                  .row
+                    .col-md-12
+                      .portlet
+                        .portlet-title.smap-chart-title
+                          .caption
+                            span.caption-subject.bold
+                              | Weekly Count                        
+                      .row(style='height:')
+                        .chart(style='height:80px')
+                          #volumn-chart.chart_custom
+        p.copyright Copyright M2U Technology All rights reserved.       
+    a.go2top(href='#index')
+        i.icon-arrow-up
+

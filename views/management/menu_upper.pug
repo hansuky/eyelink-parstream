@@ -1,0 +1,76 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src='/scripts/menu_upper.js')  
+  script.
+    $(document).ready(function() {
+      TableManaged.init();      
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Upper Menu
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Upper Menu
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Add Upper Menu                
+            .portlet-body.form
+               form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    label.control-label.col-md-2 Code
+                    .col-md-1.form-inline
+                      input#code.form-control(type='text', name='code', value='', data-placeholder='code')   
+                    label.control-label.col-md-2 Name
+                    .col-md-3.form-inline
+                      input#name.form-control(type='text', name='name', value='', data-placeholder='name')                 
+                    .col-md-1.form-inline
+                      button#btn_add.btn.blue  Add
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')      
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Upper Menu List                              
+            .portlet-body.form
+              table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                thead
+                  tr
+                    th(style='text-align:center;') 
+                    th(style='text-align:center;')  Code
+                    th(style='text-align:center;')  Name                  
+                    th(style='text-align:center;')  Edit &amp; Delete               
+                tbody
+                  each menu in list                    
+                    tr.odd.gradeX
+                      td  
+                      td  #{menu._source.code}                        
+                      td  #{menu._source.name}                  
+                      td
+                        a.btn.default.btn-xs.balck(onclick='drawUpdate("'+menu._id+'",'+menu._source.code+',"'+menu._source.name+'")')
+                          i.fa.fa-edit
+                          |  Update
+                        a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu._source.code)
+                          i.fa.fa-trash-o
+                          |  Delete      
+      #call    
+              

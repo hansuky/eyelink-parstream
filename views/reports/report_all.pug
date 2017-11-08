@@ -20,16 +20,6 @@ block script
           drawChart();
         });
     });                      
-    jQuery(document).ready(function() {
-      console.log('jQuery');
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      QuickSidebar.init(); // init quick sidebar
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      ComponentsPickers.init();
-      ComponentsDropdowns.init();
-    });
 block content
   .container-fluid
     .page-content
@@ -102,7 +92,7 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart
+              .chart(style='height:500px; ')
                 #eventBar
       .row
         .col-md-6
