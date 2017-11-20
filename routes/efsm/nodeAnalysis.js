@@ -394,7 +394,7 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
 });
 
 // pattern dataset
-router.get('/restapi/getMatchingPattern', function(req, res, next) {
+router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
   logger.debug("req.query:", req.query);
   var sDate = Utils.getDateLocal2UTC(req.query.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
   var eDate = Utils.getDateLocal2UTC(req.query.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
@@ -402,17 +402,12 @@ router.get('/restapi/getMatchingPattern', function(req, res, next) {
       INDEX : indexPatternMatching, TYPE : "pattern_matching",
       START_TIMESTAMP: sDate,
       END_TIMESTAMP: eDate};
-  var sql = "selectMatchingPattern";
+  var sql = "selectAnomaly_Pattern";
   queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
+    // logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
-    } else {
-      out_data.forEach(function(d){
-        var utcDt = d._source.da_result.timestamp;
-        var localDt = Utils.getDateUTC2Local(utcDt, CONSTS.DATEFORMAT.DATETIME, 'Y');
-        d._source.da_result.timestamp = localDt;
-      });
     }
     logger.debug('analysis/restapi/getAnomaly_Pattern -> length : %s', out_data.length);
     res.json({rtnCode: rtnCode, rtnData: out_data });

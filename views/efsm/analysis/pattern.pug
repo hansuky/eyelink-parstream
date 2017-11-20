@@ -3,7 +3,11 @@ block style
   link(rel='stylesheet', type='text/css', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(href='/efsm/assets/plugins/bootstrap-treeview/bootstrap-treeview.css', rel='stylesheet', type='text/css')
+<<<<<<< HEAD
 block script 
+=======
+block script
+>>>>>>> bfaf4b1e6bd20cdd241a8afd38616052134a8ad0
   script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')  
   script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')  
   script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
@@ -13,7 +17,10 @@ block script
   script(src='/efsm/assets/plugins/bootstrap-treeview/bootstrap-treeview.js', type='text/javascript')
   script(type='text/javascript', src="/common/scripts/util.js")
   script(type='text/javascript', src="/efsm/scripts/analysis_pattern.js")
+<<<<<<< HEAD
+=======
 
+>>>>>>> bfaf4b1e6bd20cdd241a8afd38616052134a8ad0
 block content
   .container-fluid
     .page-content
@@ -46,13 +53,13 @@ block content
                         i.fa.fa-search  Search
       .row
         .col-md-2
-          .portlet.light.bordered
+          .portlet.light.bordered(style='height: 730px;')
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Pattern list
                 //- span.caption-helper  By Created date
             .portlet-body
-              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
+              .scroller(style='height: 600px;', data-always-visible='1', data-rail-visible='0')
                 table#patternList.table.table-hover.table-light
         .col-md-2
           .portlet.light.bordered.tasks-widget
@@ -62,7 +69,7 @@ block content
                 //- span.caption-helper  Created Patterns at  
                 label#lblCreatedDate  
             .portlet-body
-              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
+              .scroller(style='height: 600px;', data-always-visible='1', data-rail-visible='0')
                 #patternTree
         .col-md-4
           .portlet.light
@@ -76,7 +83,7 @@ block content
             .portlet-body
               #sample
         .col-md-4
-          .portlet.light.bordered.tasks-widget(style='height:545px;')
+          .portlet.light.bordered.tasks-widget(style='height:500px;')
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Segment

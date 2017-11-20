@@ -61,9 +61,8 @@ function getMatchingList() {
   var stime = String(dateConvert(startDt));
   var etime = String(dateConvert(endDt));
   console.log('%s, %s', stime, etime);
-  
   var data = { startDate: stime, endDate: etime };
-  var in_data = { url: "/analysis/restapi/getMatchingPattern", type: "GET", data:data};
+  var in_data = { url: "/analysis/restapi/getAnomaly_Pattern", type: "GET", data:data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
@@ -134,19 +133,30 @@ function test(matchingList){
 }
 
 function drawMatchingHistory(matchingList) {
+  "use strict";
+  var seatvar = document.getElementsByClassName("matchingList");
+  var cnt = 0;
+  $('#matchingList').empty();
   var sb = new StringBuffer();
-  sb.append('<div class="portlet-body form"><div class="historyTable" style="height:auto">');
-  sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
-  sb.append('<th>Matching Time</th><th>active_power</th><th>ampere</th><th>power_factor</th><th>voltage</th></tr></thead><tbody>');
-
   matchingList.forEach(function(d) {
-    d = d._source.da_result;
-    console.log(d);
-    var matchingTime = d.timestamp.replace('T', ' ');
-
-    sb.append('<tr><td>' + matchingTime + '</td>');
-    sb.append('<tr><a class="')
-
+    d = d._source.analysis;
+    var listkey = d.timestamp.replace('T', ' ');
+    if(cnt == 0) {
+      var headTag = '<thead><tr>' +
+        '<th style="text-align:center"> Matching time </th>' +
+        '<th style="text-align:center"> voltage </th>' +
+        '<th style="text-align:center"> ampere </th>' +
+        '<th style="text-align:center"> active_power </th>' +
+        '<th style="text-align:center"> power_factor </th>' +
+        // '<th style="display:none;"> v_status </th>' +
+        // '<th style="display:none;"> a_status </th>' +
+        // '<th style="display:none;"> ap_status </th>' +
+        // '<th style="display:none;"> pf_status </th>' +
+        '</tr></thead>';
+      sb.append(headTag);
+      sb.append('<tbody class="matchingListBody">');
+      cnt++;
+    }
     var preTag = '<td style="text-align:center"><a onclick="javascript_:clickPattern('
     var dataTag = '<tr><td style="text-align:center">' + listkey +'</td>' +
       preTag + "'voltage'," + "'" + d.timestamp + "','" + d.voltage+ "'" + ')">' + d.voltage_status +'</td>' +

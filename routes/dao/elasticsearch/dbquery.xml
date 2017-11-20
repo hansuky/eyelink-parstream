@@ -1398,22 +1398,25 @@
         }
       }
     ]]></query>
-    <query id='selectMatchingPattern'><![CDATA[
+    <query id='selectAnomaly_Pattern'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
           "size"   : 10000,
           "sort" : { "da_result.timestamp" : { "order" : "asc"  } },
+          "_source" : [
+              "da_result.timestamp",
+              "da_result.voltage", "da_result.voltage_status",
+              "da_result.ampere", "da_result.ampere_status",
+              "da_result.active_power", "da_result.active_power_status",
+              "da_result.power_factor", "da_result.power_factor_status"],
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                  "da_result.timestamp" : {
-                    "gte" : #START_TIMESTAMP#, 
-                    "lte" : #END_TIMESTAMP#
-                  }
+                  "da_result.timestamp" : { "gte" : #gte#, "lte" : #lte# }
                 }
               }
             }
