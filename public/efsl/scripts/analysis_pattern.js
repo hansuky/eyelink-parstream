@@ -441,7 +441,7 @@ function drawPatternChart(graphData) {
   var patternLine = d3.svg.line()
       .interpolate('basis')
       .x(function(d) { return xScale(d.x); })
-      .y(function(d) { console.log(d.y); return yScale(d.y); });
+      .y(function(d) { return yScale(d.y); });
 
   var svg = d3.select('#patternChart')
       .append('svg')

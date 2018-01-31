@@ -121,7 +121,7 @@ function drawPower(data, sdate, edate) {
       'ampere',
       'voltage',
       'active_power',            
-      'amount_active_power',
+      'amount_of_active_power',
       'apparent_power'
     ])
     .sortBy(function (d) {        return d.event_time;    })    
