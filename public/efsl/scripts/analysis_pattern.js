@@ -388,20 +388,20 @@ function getGraphData(pData, mData) {
 
   if (mData == null ){
     for (i=0; i<pData.length; i++) {
-      pSet.push({ x : i, y : pData[i] * 100});
+      pSet.push({ x : i, y : pData[i]});
     }
   } else {
     for (i=0; i<pData.length; i++) {
-      pSet.push({ x : i, y : pData[i] * 100});
-      mSet.push({ x : i, y : mData[i] * 100});
+      pSet.push({ x : i, y : pData[i]});
+      mSet.push({ x : i, y : mData[i]});
     }
   }
   var array;
   if (mData != null){ array = pData.concat(mData); }
   else { array = pData; }
 
-  var minVal = Math.min.apply(null,array) * 100;
-  var maxVal = Math.max.apply(null,array) * 100;
+  var minVal = Math.min.apply(null,array);
+  var maxVal = Math.max.apply(null,array);
 
   console.log(minVal, maxVal);
   graphData.pSet = pSet;
@@ -441,7 +441,7 @@ function drawPatternChart(graphData) {
   var patternLine = d3.svg.line()
       .interpolate('basis')
       .x(function(d) { return xScale(d.x); })
-      .y(function(d) { return yScale(d.y); });
+      .y(function(d) { console.log(d.y); return yScale(d.y); });
 
   var svg = d3.select('#patternChart')
       .append('svg')
